@@ -15,9 +15,9 @@ window.PROJECTS = {
     lead: "AI-платформа аренды горного снаряжения — дипломный проект, реализованный от начала до конца.",
     meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web · Worker"]],
     problem: "Аренда горного снаряжения обычно сводится к переписке напрямую с прокатом — без структурированного способа сравнить оборудование, проверить наличие или получить подсказку под конкретный маршрут. Единой платформы с каталогом, бронированием и хоть каким-то интеллектуальным подбором не существовало.",
-    solution: "Backend на Django REST Framework и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (тип маршрута, даты, история бронирований), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Авторизация — OTP и JWT, админ- и менеджер-панель дают аналитику и экспорт в CSV.",
+    solution: "Backend на Flask и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (тип маршрута, даты, история бронирований), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Авторизация — OTP и JWT, админ- и менеджер-панель дают аналитику и экспорт в CSV.",
     arch: [
-      ["API-слой", "Django REST Framework отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
+      ["API-слой", "Flask отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
       ["Пайплайн рекомендаций", "Rule-based предфильтрация сужает список кандидатов по типу маршрута, датам и истории, а затем запрос к OpenAI ранжирует и объясняет получившийся шортлист — это удерживает стоимость и задержку под контролем."],
       ["Фоновые задачи", "Celery-воркеры с Redis в качестве брокера обрабатывают асинхронные задачи — пересчёт доступности и рассылку уведомлений — вне цикла запрос/ответ."],
       ["Деплой", "Gunicorn за Nginx, всё контейнеризировано в Docker, Postgres — основной источник данных для каталога, бронирований и пользователей."]
@@ -33,7 +33,7 @@ window.PROJECTS = {
       "Интеграция с погодным сервисом для планирования поездки"
     ],
     stack: [
-      ["Backend", "Python / Django / Django REST Framework / PostgreSQL / JWT"],
+      ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
       ["Инфраструктура", "Docker / Redis / Celery / Nginx / Gunicorn"]
@@ -46,9 +46,9 @@ window.PROJECTS = {
     lead: "Тау жабдықтарын жалға беретін AI-платформа: басынан аяғына дейін жасалған дипломдық жоба.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web · Worker"]],
     problem: "Тау жабдықтарын жалға алу әдетте жалға беру пунктімен тікелей жазысуға саяды: жабдықты салыстырудың, бар-жоғын тексерудің немесе нақты маршрутқа лайық жабдықты таңдаудың құрылымдалған жолы жоқ. Каталогы, брондауы және кем дегенде қандай да бір ақылды таңдауы бар бірыңғай платформа болмаған.",
-    solution: "Django REST Framework-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (маршрут түрі, күндер, брондау тарихы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Авторизация OTP және JWT арқылы жүреді, админ және менеджер панельдері аналитика мен CSV экспортын береді.",
+    solution: "Flask-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (маршрут түрі, күндер, брондау тарихы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Авторизация OTP және JWT арқылы жүреді, админ және менеджер панельдері аналитика мен CSV экспортын береді.",
     arch: [
-      ["API қабаты", "Django REST Framework каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
+      ["API қабаты", "Flask каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
       ["Ұсыным пайплайны", "Ережеге негізделген алдын ала сүзгі үміткерлерді маршрут түрі, күндер және тарих бойынша қысқартады, содан кейін OpenAI сұранысы шыққан шағын тізімді саралап, түсіндіреді. Бұл шығын мен кідірісті бақылауда ұстайды."],
       ["Фондық тапсырмалар", "Redis брокері бар Celery-воркерлер қолжетімділікті қайта есептеу және хабарландыру жіберу сияқты асинхронды тапсырмаларды сұраныс/жауап циклінен тыс орындайды."],
       ["Деплой", "Gunicorn Nginx артында, бәрі Docker-ге салынған. Postgres каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
@@ -64,7 +64,7 @@ window.PROJECTS = {
       "Сапарды жоспарлауға арналған ауа райы сервисімен интеграция"
     ],
     stack: [
-      ["Backend", "Python / Django / Django REST Framework / PostgreSQL / JWT"],
+      ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
       ["Инфрақұрылым", "Docker / Redis / Celery / Nginx / Gunicorn"]
@@ -77,9 +77,9 @@ window.PROJECTS = {
     lead: "An AI platform for renting mountain equipment: a graduation project built end to end.",
     meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web · Worker"]],
     problem: "Renting mountain gear usually comes down to messaging a rental shop directly, with no structured way to compare equipment, check availability or get a suggestion for a specific route. There was no single platform with a catalog, booking and at least some intelligent selection.",
-    solution: "A Django REST Framework backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (route type, dates, booking history) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Authentication uses OTP and JWT, and the admin and manager panels provide analytics and CSV export.",
+    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (route type, dates, booking history) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Authentication uses OTP and JWT, and the admin and manager panels provide analytics and CSV export.",
     arch: [
-      ["API layer", "Django REST Framework serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
+      ["API layer", "Flask serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
       ["Recommendation pipeline", "Rule-based prefiltering narrows the candidates by route type, dates and history, then an OpenAI request ranks and explains the resulting shortlist, which keeps cost and latency under control."],
       ["Background jobs", "Celery workers with Redis as the broker handle asynchronous tasks, such as recalculating availability and sending notifications, outside the request/response cycle."],
       ["Deployment", "Gunicorn behind Nginx, everything containerized in Docker, with Postgres as the primary source of truth for the catalog, bookings and users."]
@@ -95,7 +95,7 @@ window.PROJECTS = {
       "Weather service integration for trip planning"
     ],
     stack: [
-      ["Backend", "Python / Django / Django REST Framework / PostgreSQL / JWT"],
+      ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
       ["Infrastructure", "Docker / Redis / Celery / Nginx / Gunicorn"]
