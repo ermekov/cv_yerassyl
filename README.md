@@ -41,7 +41,7 @@ google-apps-script/Code.gs     форма → Google Sheets скрипті
 | Резюме | `assets/cv/Yermekov_Yerassyl_CV.pdf` | Ағылшынша болса `..._EN.pdf` деп салып, `config.js`-те `en` жолын ауыстырыңыз |
 | Сертификат суреттері | `assets/img/certs/<аты>.webp` | Атаулары `assets/js/certs.js` ішінде |
 
-`<жоба>` папкалары: `peakrent-ai` (1–4), `ai-business-assistant` (1–2), `ken-tereze-ai` (1–2).
+`<жоба>` папкалары: `peakrent-ai` (1–3), `ai-business-assistant` (1–2), `ken-tereze-ai` (1–2).
 Суреттің кеңейтуі `png`, `jpg`, `jpeg` немесе `webp` бола алады, сайт өзі табады.
 Ұсыныс: ені 1400–1600 px, көлемі 500 KB-тан аз, қатынасы шамамен 16:10.
 
@@ -66,6 +66,5 @@ google-apps-script/Code.gs     форма → Google Sheets скрипті
 **Vercel:** папканы GitHub-қа жүктеңіз → vercel.com → *Add New Project* → репозиторийді таңдаңыз → Framework: **Other** → Deploy.
 Кейін фото не мәтін өзгерткенде: `git add . && git commit -m "update" && git push`, Vercel өзі жаңартады.
 
-**Домен қосқаннан кейін:** `index.html` ішіндегі `og:image` жолын толық адреске ауыстырыңыз:
-`<meta property="og:image" content="https://сіздің-домен/assets/img/og.png">`
+**Домен өзгерсе:** `index.html` ішіндегі `canonical`, `og:url`, `og:image`, `twitter:image` жолдарындағы `https://cvyermekov.vercel.app` адресін жаңасына ауыстырыңыз.
 Сонда Telegram/LinkedIn-де сілтеме әдемі превьюмен шығады.

@@ -9,34 +9,38 @@ window.PROJECTS = {
   title: "MountainRent AI — PeakRent.kz",
   gh: "https://github.com/ermekov/Mountain_equipment_rental",
   url: "https://cvyermekov.vercel.app/ru/projects/peakrent-ai",
-  files: ["1", "2", "3", "4"],
+  files: ["1", "2", "3"],
   ru: {
     kicker: "Дипломный проект · AI · Full-Stack",
     lead: "AI-платформа аренды горного снаряжения — дипломный проект, реализованный от начала до конца.",
     meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web · Worker"]],
     problem: "Аренда горного снаряжения обычно сводится к переписке напрямую с прокатом — без структурированного способа сравнить оборудование, проверить наличие или получить подсказку под конкретный маршрут. Единой платформы с каталогом, бронированием и хоть каким-то интеллектуальным подбором не существовало.",
-    solution: "Backend на Flask и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (тип маршрута, даты, история бронирований), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Авторизация — OTP и JWT, админ- и менеджер-панель дают аналитику и экспорт в CSV.",
+    solution: "Backend на Flask и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (теги активности, погода, уровень, наличие на складе), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Рядом с каталогом работает AI-чат-ассистент, который знает сайт и остатки товаров, а отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Авторизация — OTP и JWT; менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж (CSV для Excel).",
     arch: [
       ["API-слой", "Flask отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
-      ["Пайплайн рекомендаций", "Rule-based предфильтрация сужает список кандидатов по типу маршрута, датам и истории, а затем запрос к OpenAI ранжирует и объясняет получившийся шортлист — это удерживает стоимость и задержку под контролем."],
-      ["Фоновые задачи", "Celery-воркеры с Redis в качестве брокера обрабатывают асинхронные задачи — пересчёт доступности и рассылку уведомлений — вне цикла запрос/ответ."],
-      ["Деплой", "Gunicorn за Nginx, всё контейнеризировано в Docker, Postgres — основной источник данных для каталога, бронирований и пользователей."]
+      ["Пайплайн рекомендаций", "Предфильтрация по тегам (активность, погода, уровень) и наличию на складе сужает список кандидатов, затем запрос к GPT-4o-mini ранжирует и объясняет получившийся шортлист — это удерживает стоимость и задержку под контролем."],
+      ["AI-ассистент","Чат-виджет на сайте получает контекст из каталога и базы — названия, цены и остатки — и отвечает по реальным данным, а не по догадке модели."],
+      ["Внешние сервисы", "Погода через OpenWeatherMap, SMS-шлюз для OTP-кодов и платёжный сервис (демо Kaspi QR) подключены через отдельный слой сервисов, поэтому бизнес-логика отделена от маршрутов."],
+      ["Деплой", "Backend запускается через Gunicorn, PostgreSQL — основной источник данных для каталога, бронирований и пользователей."]
     ],
     features: [
-      "Каталог снаряжения с фильтрами и детальными карточками товаров",
-      "Бронирование с проверкой доступности по датам",
-      "Гибридные AI-рекомендации (rule-based фильтры + логика OpenAI)",
+      "Каталог снаряжения с карточками: название, цена и остаток на складе",
+      "Страницы: главная, каталог, профиль и «Мои заказы»",
+      "Бронирование с оплатой и проверкой доступности по датам",
+      "AI-чат-ассистент сбоку на сайте: знает сайт и каталог, называет товары, цены и остатки",
+      "Страница AI-рекомендаций (GPT-4o-mini): уточняет уровень и направление, подбирает комплект с учётом погоды (например, новичок + трекинг → палатка, трекинговые палки)",
       "Аутентификация через OTP и JWT",
       "Отзывы и рейтинги для каждого объявления",
-      "Админ- и менеджер-панели с аналитикой и экспортом в CSV",
-      "Демо-оплата через Kaspi QR",
-      "Интеграция с погодным сервисом для планирования поездки"
+      "Панель менеджера: проверка и подтверждение заказов",
+      "Панель администратора: добавление, изменение и удаление товаров, приём и отмена заказов, полный доступ",
+      "Аналитика продаж с выгрузкой отчётов (CSV, открывается в Excel): самые продаваемые товары, выручка, самые активные покупатели",
+      "Демо-оплата через Kaspi QR"
     ],
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
-      ["Инфраструктура", "Docker / Redis / Celery / Nginx / Gunicorn"]
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["Инфраструктура и сервисы", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "Сложнее всего было сделать AI-рекомендации полезными, не превратив их в чёрный ящик — пришлось ограничить, что именно модель видит и решает, чтобы результат оставался объяснимым и достаточно быстрым для флоу бронирования, а не для чат-сценария.",
     learned: "Как проектировать AI-функцию как ограниченный этап пайплайна, а не как универсального чат-бота, приклеенного к интерфейсу — и насколько «умная» фича на самом деле держится на дисциплинированной подготовке данных ещё до того, как в дело вступает модель."
@@ -46,28 +50,32 @@ window.PROJECTS = {
     lead: "Тау жабдықтарын жалға беретін AI-платформа: басынан аяғына дейін жасалған дипломдық жоба.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web · Worker"]],
     problem: "Тау жабдықтарын жалға алу әдетте жалға беру пунктімен тікелей жазысуға саяды: жабдықты салыстырудың, бар-жоғын тексерудің немесе нақты маршрутқа лайық жабдықты таңдаудың құрылымдалған жолы жоқ. Каталогы, брондауы және кем дегенде қандай да бір ақылды таңдауы бар бірыңғай платформа болмаған.",
-    solution: "Flask-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (маршрут түрі, күндер, брондау тарихы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Авторизация OTP және JWT арқылы жүреді, админ және менеджер панельдері аналитика мен CSV экспортын береді.",
+    solution: "Flask-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (белсенділік тегтері, ауа райы, деңгей, қоймадағы бар-жоғы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат-ассистент жұмыс істейді, ал GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Авторизация OTP және JWT арқылы жүреді; менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын жүктейді (Excel-ге арналған CSV).",
     arch: [
       ["API қабаты", "Flask каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
-      ["Ұсыным пайплайны", "Ережеге негізделген алдын ала сүзгі үміткерлерді маршрут түрі, күндер және тарих бойынша қысқартады, содан кейін OpenAI сұранысы шыққан шағын тізімді саралап, түсіндіреді. Бұл шығын мен кідірісті бақылауда ұстайды."],
-      ["Фондық тапсырмалар", "Redis брокері бар Celery-воркерлер қолжетімділікті қайта есептеу және хабарландыру жіберу сияқты асинхронды тапсырмаларды сұраныс/жауап циклінен тыс орындайды."],
-      ["Деплой", "Gunicorn Nginx артында, бәрі Docker-ге салынған. Postgres каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
+      ["Ұсыным пайплайны", "Тегтер (белсенділік, ауа райы, деңгей) және қоймадағы бар-жоғы бойынша алдын ала сүзгі үміткерлерді қысқартады, содан кейін GPT-4o-mini сұранысы шыққан шағын тізімді саралап, түсіндіреді. Бұл шығын мен кідірісті бақылауда ұстайды."],
+      ["AI-ассистент","Сайттағы чат-виджет контексті каталог пен дерекқордан алады (атауы, бағасы, қалдығы), сондықтан модельдің болжамымен емес, нақты деректермен жауап береді."],
+      ["Сыртқы сервистер", "OpenWeatherMap арқылы ауа райы, OTP-кодтар үшін SMS-шлюз және төлем сервисі (демо Kaspi QR) бөлек сервис қабаты арқылы қосылған, сондықтан бизнес-логика маршруттардан бөлек."],
+      ["Деплой", "Backend Gunicorn арқылы жұмыс істейді, PostgreSQL каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
     ],
     features: [
-      "Сүзгілері мен толық карточкалары бар жабдық каталогы",
-      "Күндер бойынша қолжетімділікті тексеретін брондау",
-      "Гибридті AI-ұсынымдар (ережеге негізделген сүзгілер + OpenAI логикасы)",
+      "Атауы, бағасы және қоймадағы қалдығы көрсетілген жабдық каталогы",
+      "Беттер: басты бет, каталог, профиль және «Менің тапсырыстарым»",
+      "Төлеммен және күндер бойынша қолжетімділікті тексеретін брондау",
+      "Сайттың шетіндегі AI-чат-ассистент: сайт пен каталогты біледі, тауар атауын, бағасын және қалдығын айтады",
+      "AI-ұсыным беті (GPT-4o-mini): деңгей мен бағытты нақтылап, ауа райын ескере отырып жиынтық ұсынады (мысалы, жаңадан бастаушы + трекинг → шатыр, трекинг таяқтары)",
       "OTP және JWT арқылы аутентификация",
       "Әр хабарландыруға пікірлер мен рейтингтер",
-      "Аналитикасы мен CSV экспорты бар админ және менеджер панельдері",
-      "Kaspi QR арқылы демо-төлем",
-      "Сапарды жоспарлауға арналған ауа райы сервисімен интеграция"
+      "Менеджер панелі: тапсырыстарды тексеру және растау",
+      "Админ панелі: тауар қосу, өзгерту, жою, тапсырысты қабылдау және болдырмау, толық қолжетімділік",
+      "Сатылым аналитикасы мен есептерді жүктеу (CSV, Excel-де ашылады): ең көп сатылған тауарлар, түсім, ең белсенді сатып алушылар",
+      "Kaspi QR арқылы демо-төлем"
     ],
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
-      ["Инфрақұрылым", "Docker / Redis / Celery / Nginx / Gunicorn"]
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["Инфрақұрылым және сервистер", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "Ең қиыны AI-ұсынымдарды «қара жәшікке» айналдырмай, пайдалы ету болды. Нәтиже түсіндірілетін және чат емес, брондау процесіне жететіндей жылдам болуы үшін модель нені көретінін және нені шешетінін шектеуге тура келді.",
     learned: "AI-функцияны интерфейске жабыстырылған әмбебап чат-бот емес, пайплайндағы шектеулі қадам ретінде жобалауды үйрендім. Сондай-ақ «ақылды» функцияның шын мәнінде модель жұмысқа кіріспес бұрын деректерді тәртіппен дайындауға қаншалықты тәуелді екенін түсіндім."
@@ -77,28 +85,32 @@ window.PROJECTS = {
     lead: "An AI platform for renting mountain equipment: a graduation project built end to end.",
     meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web · Worker"]],
     problem: "Renting mountain gear usually comes down to messaging a rental shop directly, with no structured way to compare equipment, check availability or get a suggestion for a specific route. There was no single platform with a catalog, booking and at least some intelligent selection.",
-    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (route type, dates, booking history) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Authentication uses OTP and JWT, and the admin and manager panels provide analytics and CSV export.",
+    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (activity tags, weather, level, stock availability) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Next to the catalog there is an AI chat assistant that knows the site and the product stock, and a separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Authentication uses OTP and JWT; the manager confirms orders, while the admin manages products and orders and exports sales analytics (CSV for Excel).",
     arch: [
       ["API layer", "Flask serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
-      ["Recommendation pipeline", "Rule-based prefiltering narrows the candidates by route type, dates and history, then an OpenAI request ranks and explains the resulting shortlist, which keeps cost and latency under control."],
-      ["Background jobs", "Celery workers with Redis as the broker handle asynchronous tasks, such as recalculating availability and sending notifications, outside the request/response cycle."],
-      ["Deployment", "Gunicorn behind Nginx, everything containerized in Docker, with Postgres as the primary source of truth for the catalog, bookings and users."]
+      ["Recommendation pipeline", "Tag-based prefiltering (activity, weather, level) and stock availability narrows the candidates, then a GPT-4o-mini request ranks and explains the resulting shortlist, which keeps cost and latency under control."],
+      ["AI assistant","The on-site chat widget gets its context from the catalog and the database (names, prices, stock), so it answers from real data rather than from the model’s guesses."],
+      ["External services", "Weather via OpenWeatherMap, an SMS gateway for OTP codes and a payment service (Kaspi QR demo) are connected through a separate service layer, so business logic stays apart from the routes."],
+      ["Deployment", "The backend runs on Gunicorn, with PostgreSQL as the primary source of truth for the catalog, bookings and users."]
     ],
     features: [
-      "Equipment catalog with filters and detailed product cards",
-      "Booking with date-based availability checks",
-      "Hybrid AI recommendations (rule-based filters + OpenAI logic)",
+      "Equipment catalog with cards showing name, price and stock level",
+      "Pages: home, catalog, profile and “My orders”",
+      "Booking with payment and date-based availability checks",
+      "AI chat assistant on the side of the site: knows the site and the catalog, can tell product names, prices and stock",
+      "AI recommendation page (GPT-4o-mini): asks for the level and direction, then builds a kit that takes the weather into account (for example, beginner + trekking → tent, trekking poles)",
       "OTP and JWT authentication",
       "Reviews and ratings for every listing",
-      "Admin and manager panels with analytics and CSV export",
-      "Demo payment via Kaspi QR",
-      "Weather service integration for trip planning"
+      "Manager panel: review and confirm orders",
+      "Admin panel: add, edit and delete products, accept and cancel orders, full access",
+      "Sales analytics with report export (CSV, opens in Excel): best-selling products, revenue, most active buyers",
+      "Demo payment via Kaspi QR"
     ],
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API / Rule-based filtering / Hybrid recommendation logic"],
-      ["Infrastructure", "Docker / Redis / Celery / Nginx / Gunicorn"]
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["Infrastructure and services", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "The hardest part was making AI recommendations useful without turning them into a black box. I had to limit what exactly the model sees and decides, so the result stays explainable and fast enough for a booking flow rather than a chat scenario.",
     learned: "How to design an AI feature as a bounded step in a pipeline rather than a general-purpose chatbot bolted onto the UI, and how much a “smart” feature really depends on disciplined data preparation before the model even gets involved."
@@ -212,27 +224,30 @@ window.PROJECTS = {
   files: ["1", "2"],
   ru: {
     kicker: "Python · AI · Автоматизация",
-    lead: "Система автоматизации на Telegram, которая обрабатывает PDF-заказы дилеров и рассчитывает цену по внутреннему прайс-листу.",
+    lead: "Telegram-бот для дилеров: принимает PDF-заказ на окна, рассчитывает стоимость по материалам из базы и после согласия дилера передаёт заказ менеджеру.",
     meta: [["Роль", "Один разработчик — backend и автоматизация"], ["Отрасль", "Производство окон и дверей"], ["Интерфейс", "Telegram"]],
-    problem: "Дилеры присылают PDF-заказы, сформированные сторонним ПО для проектирования, и указанные в них цены часто расходятся с актуальным внутренним прайс-листом — каждый заказ приходится пересчитывать вручную перед подтверждением.",
-    solution: "Я реализовал асинхронный сервис на FastAPI, который принимает PDF через Telegram-бота, разбирает документ и извлекает параметры заказа — размеры, количество, профиль, цвет, стекло, фурнитуру и дополнительные опции, — а затем рассчитывает цену по внутреннему прайс-листу, не полагаясь на цену из самого PDF. Результаты и история заказов хранятся в PostgreSQL.",
+    problem: "Дилер присылает заказ в PDF: размеры окон, из каких материалов они делаются и сколько штук нужно. Чтобы назвать сумму, нужно разобрать документ и вручную посчитать каждую позицию — раму, стекло, фурнитуру и ручки — по актуальным ценам, а на это уходит время и появляются ошибки.",
+    solution: "Дилер отправляет PDF Telegram-боту. Система разбирает документ и извлекает размеры, количество и материалы, затем рассчитывает стоимость по комплектующим из базы данных — рама, стекло, ручка и другие материалы — и сразу сообщает дилеру итоговую сумму. Если дилер соглашается, заказ автоматически уходит менеджеру в Telegram. Результаты расчётов и история заказов хранятся в базе.",
     arch: [
-      ["Приём", "Telegram-бот принимает PDF-заказ и передаёт его в асинхронный конвейер обработки — бот остаётся отзывчивым, пока парсинг выполняется в фоне."],
-      ["Парсинг", "Отдельный парсер извлекает из PDF структурированные поля — размеры, количество, профиль, цвет, тип стекла, фурнитуру и дополнительные опции."],
-      ["Модуль расчёта цены", "Разобранные параметры сопоставляются с внутренним прайс-листом для расчёта итоговой цены — полностью независимо от цены, указанной в PDF."],
-      ["Хранение данных", "Async SQLAlchemy 2.0 поверх PostgreSQL хранит заказы, разобранные параметры и рассчитанные цены, схему миграций ведёт Alembic."]
+      ["Приём", "Дилер отправляет PDF-заказ Telegram-боту. Бот передаёт файл в конвейер обработки и остаётся отзывчивым, пока идёт разбор."],
+      ["Парсинг", "Отдельный парсер извлекает из PDF структурированные поля: размеры изделий, количество и материалы (профиль, стекло, фурнитура, ручки и другое)."],
+      ["Расчёт стоимости", "Каждая позиция заказа сопоставляется с материалами и ценами в базе данных (около 400 позиций), из них складывается итоговая сумма — независимо от цены, указанной в самом PDF."],
+      ["AI-диалог", "Ответы дилеру формируются через OpenAI API, а стоимость определяется по данным из базы, поэтому сумма не зависит от «фантазии» модели."],
+      ["Подтверждение", "Бот показывает дилеру сумму. Если дилер принимает расчёт, заказ отправляется менеджеру в Telegram для дальнейшей работы."],
+      ["Хранение данных", "Заказы, разобранные параметры, материалы и рассчитанные цены хранятся в базе данных."]
     ],
     features: [
-      "Приём заказов через Telegram-бота",
-      "Структурированный парсинг PDF — размеры, профиль, цвет, стекло, фурнитура",
-      "Расчёт цены по внутреннему прайс-листу независимо от цены в исходном PDF",
-      "Асинхронная обработка на FastAPI",
-      "История заказов и расчётов в PostgreSQL",
-      "Миграции схемы через Alembic"
+      "Приём PDF-заказов дилеров через Telegram-бота",
+      "Автоматический разбор размеров, количества и материалов из PDF",
+      "Расчёт стоимости по материалам из базы: рама, стекло, ручка и другие комплектующие",
+      "Ответы бота дилеру формируются через OpenAI API, итоговая сумма сообщается сразу",
+      "Подтверждение расчёта дилером",
+      "Автоматическая отправка принятого заказа менеджеру в Telegram",
+      "История заказов и расчётов в базе данных"
     ],
     stack: [
       ["Backend", "Python / FastAPI / AsyncIO / Async SQLAlchemy 2.0 / PostgreSQL / Alembic"],
-      ["Автоматизация", "Telegram Bot API / PDF parsing / Internal pricing engine"],
+      ["Автоматизация", "Telegram Bot API / OpenAI API / PDF parsing / Internal pricing engine"],
       ["Инфраструктура", "Docker Compose"]
     ],
     challenge: "Разметка PDF из программы проектирования не всегда одинакова, поэтому парсер должен выдерживать структурные отличия, не искажая параметры — неверный код профиля или фурнитуры меняет итоговую цену.",
@@ -240,27 +255,30 @@ window.PROJECTS = {
   },
   kk: {
     kicker: "Python · AI · Автоматтандыру",
-    lead: "Дилерлердің PDF-тапсырыстарын өңдеп, бағаны ішкі прайс-парақ бойынша есептейтін Telegram-жүйе.",
+    lead: "Дилерлерге арналған Telegram-бот: терезеге PDF-тапсырысты қабылдап, бағаны базадағы материалдар бойынша есептейді, дилер келіскен соң тапсырысты менеджерге жібереді.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend және автоматтандыру"], ["Сала", "Терезе мен есік өндірісі"], ["Интерфейс", "Telegram"]],
-    problem: "Дилерлер үшінші тарап жобалау бағдарламасында жасалған PDF-тапсырыстар жібереді, ондағы бағалар ішкі өзекті прайс-парақтан жиі өзгеше болады. Сондықтан әр тапсырысты растау алдында қолмен қайта есептеуге тура келеді.",
-    solution: "FastAPI-дағы асинхронды сервис жасадым: ол PDF-ті Telegram-бот арқылы қабылдап, құжатты талдап, тапсырыс параметрлерін (өлшемдер, саны, профиль, түс, әйнек, фурнитура және қосымша опциялар) шығарып алады. Содан кейін PDF-тегі бағаға сүйенбей, ішкі прайс-парақ бойынша бағаны есептейді. Нәтижелер мен тапсырыс тарихы PostgreSQL-де сақталады.",
+    problem: "Дилер PDF форматында тапсырыс жібереді: терезе өлшемдері, қандай материалдардан жасалатыны және неше дана керек екені көрсетіледі. Соманы айту үшін құжатты талдап, әр позицияны (жақтау, әйнек, фурнитура, тұтқа) өзекті бағамен қолмен есептеу керек, бұл уақыт алады және қателікке апарады.",
+    solution: "Дилер PDF-ті Telegram-ботқа жібереді. Жүйе құжатты талдап, өлшемдерді, санын және материалдарды шығарады, содан кейін дерекқордағы құрамдауыштар (жақтау, әйнек, тұтқа және басқа материалдар) бойынша құнын есептеп, дилерге түпкілікті соманы бірден айтады. Дилер келіссе, тапсырыс автоматты түрде менеджерге Telegram арқылы жіберіледі. Есептеу нәтижелері мен тапсырыс тарихы базада сақталады.",
     arch: [
-      ["Қабылдау", "Telegram-бот PDF-тапсырысты қабылдап, асинхронды өңдеу конвейеріне береді, сондықтан талдау фонда жүріп жатқанда бот жылдам жауап беріп тұрады."],
-      ["Талдау", "Бөлек парсер PDF-тен құрылымдалған өрістерді шығарады: өлшемдер, саны, профиль, түс, әйнек түрі, фурнитура және қосымша опциялар."],
-      ["Баға есептеу модулі", "Талданған параметрлер ішкі прайс-парақпен салыстырылып, түпкілікті баға есептеледі. Бұл PDF-те көрсетілген бағадан толық тәуелсіз."],
-      ["Деректерді сақтау", "PostgreSQL үстіндегі Async SQLAlchemy 2.0 тапсырыстарды, талданған параметрлерді және есептелген бағаларды сақтайды, миграция схемасын Alembic жүргізеді."]
+      ["Қабылдау", "Дилер PDF-тапсырысты Telegram-ботқа жібереді. Бот файлды өңдеу конвейеріне береді және талдау жүріп жатқанда жылдам жауап беріп тұрады."],
+      ["Талдау", "Бөлек парсер PDF-тен құрылымдалған өрістерді шығарады: бұйым өлшемдері, саны және материалдар (профиль, әйнек, фурнитура, тұтқалар және басқа)."],
+      ["Құнды есептеу", "Тапсырыстың әр позициясы дерекқордағы материалдар мен бағалармен (шамамен 400 позиция) салыстырылып, түпкілікті сома жиналады. Бұл PDF-тегі бағадан тәуелсіз."],
+      ["AI-диалог", "Дилерге жауаптар OpenAI API арқылы қалыптасады, ал құн дерекқордағы деректер бойынша анықталады, сондықтан сома модельдің «қиялына» тәуелсіз."],
+      ["Растау", "Бот дилерге соманы көрсетеді. Дилер есептеуді қабылдаса, тапсырыс әрі қарай жұмыс істеу үшін менеджерге Telegram арқылы жіберіледі."],
+      ["Деректерді сақтау", "Тапсырыстар, талданған параметрлер, материалдар және есептелген бағалар дерекқорда сақталады."]
     ],
     features: [
-      "Telegram-бот арқылы тапсырыс қабылдау",
-      "PDF-ті құрылымды талдау: өлшемдер, профиль, түс, әйнек, фурнитура",
-      "Бастапқы PDF-тегі бағадан тәуелсіз, ішкі прайс-парақ бойынша баға есептеу",
-      "FastAPI-да асинхронды өңдеу",
-      "Тапсырыстар мен есептеулер тарихы PostgreSQL-де",
-      "Alembic арқылы схема миграциялары"
+      "Дилерлердің PDF-тапсырыстарын Telegram-бот арқылы қабылдау",
+      "PDF-тен өлшемдерді, санын және материалдарды автоматты талдау",
+      "Базадағы материалдар бойынша құнды есептеу: жақтау, әйнек, тұтқа және басқа құрамдауыштар",
+      "Бот жауаптары OpenAI API арқылы қалыптасады, түпкілікті сома дилерге бірден айтылады",
+      "Дилердің есептеуді растауы",
+      "Қабылданған тапсырысты менеджерге Telegram арқылы автоматты жіберу",
+      "Тапсырыстар мен есептеулер тарихы дерекқорда"
     ],
     stack: [
       ["Backend", "Python / FastAPI / AsyncIO / Async SQLAlchemy 2.0 / PostgreSQL / Alembic"],
-      ["Автоматтандыру", "Telegram Bot API / PDF parsing / Internal pricing engine"],
+      ["Автоматтандыру", "Telegram Bot API / OpenAI API / PDF parsing / Internal pricing engine"],
       ["Инфрақұрылым", "Docker Compose"]
     ],
     challenge: "Жобалау бағдарламасының PDF-тері әрдайым бірдей болмайды, сондықтан парсер параметрлерді бұрмаламай, құрылымдағы айырмашылықтарға төтеп бере білуі керек. Профиль немесе фурнитура кодының қате болуы түпкілікті бағаны өзгертеді.",
@@ -268,27 +286,30 @@ window.PROJECTS = {
   },
   en: {
     kicker: "Python · AI · Automation",
-    lead: "A Telegram-based automation system that processes dealers' PDF orders and calculates the price from the internal price list.",
+    lead: "A Telegram bot for dealers: it takes a PDF window order, calculates the cost from the materials in the database and, once the dealer agrees, passes the order to a manager.",
     meta: [["Role", "Solo developer: backend and automation"], ["Industry", "Window and door manufacturing"], ["Interface", "Telegram"]],
-    problem: "Dealers send PDF orders generated by third-party design software, and the prices stated in them often differ from the current internal price list, so every order has to be recalculated manually before it is confirmed.",
-    solution: "I built an asynchronous FastAPI service that receives the PDF through a Telegram bot, parses the document and extracts the order parameters (dimensions, quantity, profile, color, glass, hardware and extra options), then calculates the price from the internal price list without relying on the price in the PDF itself. Results and order history are stored in PostgreSQL.",
+    problem: "A dealer sends an order as a PDF with window dimensions, the materials they are made from and the quantity. To name a price, someone has to parse the document and calculate every item by hand (frame, glass, hardware and handles) at current prices, which takes time and invites mistakes.",
+    solution: "The dealer sends the PDF to a Telegram bot. The system parses the document and extracts dimensions, quantities and materials, then calculates the cost from the components in the database (frame, glass, handle and other materials) and immediately tells the dealer the final amount. If the dealer agrees, the order is automatically sent to the manager in Telegram. Calculation results and order history are stored in the database.",
     arch: [
-      ["Intake", "The Telegram bot receives the PDF order and hands it to an asynchronous processing pipeline, so the bot stays responsive while parsing runs in the background."],
-      ["Parsing", "A dedicated parser extracts structured fields from the PDF: dimensions, quantity, profile, color, glass type, hardware and extra options."],
-      ["Pricing module", "Parsed parameters are matched against the internal price list to compute the final price, completely independent of the price stated in the PDF."],
-      ["Data storage", "Async SQLAlchemy 2.0 on top of PostgreSQL stores orders, parsed parameters and calculated prices, with the migration schema managed by Alembic."]
+      ["Intake", "The dealer sends a PDF order to the Telegram bot. The bot hands the file to a processing pipeline and stays responsive while parsing runs."],
+      ["Parsing", "A dedicated parser extracts structured fields from the PDF: item dimensions, quantity and materials (profile, glass, hardware, handles and more)."],
+      ["Cost calculation", "Every order item is matched against the materials and prices in the database (about 400 items) to build the total, independent of the price stated in the PDF."],
+      ["AI dialog", "Replies to the dealer are generated through the OpenAI API, while the cost is determined from the data in the database, so the amount does not depend on the model’s guesswork."],
+      ["Confirmation", "The bot shows the dealer the total. If the dealer accepts the calculation, the order is sent to a manager in Telegram for further work."],
+      ["Data storage", "Orders, parsed parameters, materials and calculated prices are stored in the database."]
     ],
     features: [
-      "Order intake through a Telegram bot",
-      "Structured PDF parsing: dimensions, profile, color, glass, hardware",
-      "Price calculation from the internal price list, independent of the price in the source PDF",
-      "Asynchronous processing on FastAPI",
-      "Order and calculation history in PostgreSQL",
-      "Schema migrations through Alembic"
+      "Dealer PDF orders received through a Telegram bot",
+      "Automatic extraction of dimensions, quantities and materials from the PDF",
+      "Cost calculated from the materials in the database: frame, glass, handle and other components",
+      "Bot replies are generated through the OpenAI API, and the dealer gets the final amount immediately",
+      "Dealer confirmation of the calculation",
+      "Accepted order is sent to the manager in Telegram automatically",
+      "Order and calculation history in the database"
     ],
     stack: [
       ["Backend", "Python / FastAPI / AsyncIO / Async SQLAlchemy 2.0 / PostgreSQL / Alembic"],
-      ["Automation", "Telegram Bot API / PDF parsing / Internal pricing engine"],
+      ["Automation", "Telegram Bot API / OpenAI API / PDF parsing / Internal pricing engine"],
       ["Infrastructure", "Docker Compose"]
     ],
     challenge: "PDF layouts from the design software are not always identical, so the parser has to tolerate structural differences without distorting the parameters. A wrong profile or hardware code changes the final price.",

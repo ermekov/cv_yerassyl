@@ -36,42 +36,101 @@
     requestAnimationFrame(function () { document.documentElement.classList.add('ready'); });
   });
 
-  /* --------------------------------------------- terminal (assistant.py demo) */
-  (function () {
-    var term = $('#term'); if (!term) return;
-    var lines = [
-      { t: '$ python assistant.py', c: 'cmd', type: true },
-      { t: '[telegram] new message', c: 'l' },
-      { t: '[parser]   request structured', c: 'l' },
-      { t: '[postgres] saved', c: 'l' },
-      { t: '[sheets]   row appended', c: 'l' },
-      { t: '\u2713 workflow done', c: 'ok' }
+  /* ------------------------------------------- hero: project diagram switcher */
+  var vizSetup = (function () {
+    var host = $('#viz'), tabsEl = $('#vtabs'), capEl = $('#vcap'), moreBtn = $('#vmore'), fileEl = $('.vh span'), card = $('.vcard');
+    if (!host || !tabsEl) return function () {};
+    var NAMES = { dealer: { ru: 'Дилер', kk: 'Дилер', en: 'Dealer' }, mgr: { ru: 'Менеджер', kk: 'Менеджер', en: 'Manager' } };
+    var VZ = [
+      { slug: 'peakrent-ai', tab: 'PeakRent', file: 'peakrent.kz', cap: 'vc_pk',
+        L: [{ t: 'Next.js', s: { ru: 'клиент', kk: 'клиент', en: 'client' } },
+            { t: { ru: 'Панели', kk: 'Панельдер', en: 'Panels' }, s: { ru: 'менеджер · админ', kk: 'менеджер · админ', en: 'manager · admin' } },
+            { t: 'AI-chat', s: { ru: 'ассистент', kk: 'ассистент', en: 'assistant' } }],
+        C: { t: 'Flask API', s: 'Python' },
+        R: [{ t: 'PostgreSQL', s: 'SQLAlchemy' }, { t: 'OpenAI API', s: 'GPT-4o-mini' }, { t: 'OpenWeather', s: { ru: 'погода', kk: 'ауа райы', en: 'weather' } }] },
+      { slug: 'ken-tereze-ai', tab: 'Ken Tereze', file: 'ken-tereze', cap: 'vc_kt',
+        L: [{ t: NAMES.dealer, s: { ru: 'PDF-заказ', kk: 'PDF-тапсырыс', en: 'PDF order' } }, { t: 'Telegram', s: 'Bot API' }],
+        C: { t: { ru: 'Расчёт', kk: 'Есептеу', en: 'Pricing' }, s: { ru: 'PDF → сумма', kk: 'PDF → сома', en: 'PDF → total' } },
+        R: [{ t: 'PostgreSQL', s: { ru: 'история', kk: 'тарих', en: 'history' } }, { t: 'OpenAI API', s: { ru: 'диалог бота', kk: 'бот диалогы', en: 'bot dialog' } }, { t: NAMES.mgr, s: 'Telegram' }] },
+      { slug: 'ai-business-assistant', tab: 'vt_as', file: 'ai-assistant', cap: 'vc_as',
+        L: [{ t: 'Telegram', s: 'Bot API' }, { t: 'WhatsApp', s: 'Business API' }, { t: 'Instagram', s: 'Messaging API' }],
+        C: { t: 'Python API', s: 'workflow' },
+        R: [{ t: 'PostgreSQL', s: { ru: 'данные', kk: 'деректер', en: 'data' } }, { t: 'Google Sheets', s: 'live sync' }, { t: { ru: 'Внешние API', kk: 'Сыртқы API', en: 'External APIs' }, s: { ru: 'интеграции', kk: 'интеграциялар', en: 'integrations' } }] }
     ];
-    var tag = function (s) { return esc(s).replace(/^(\[[a-z]+\]\s*)/, '<span class="tag">$1</span>'); };
-    var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
-    var alive = true;
-    if (reduce) {
-      term.innerHTML = lines.map(function (L) { return '<span class="l ' + L.c + '">' + (L.type ? esc(L.t) : tag(L.t)) + '</span>'; }).join('');
-      return;
+    var cur = 0, auto = !reduce, timer = null, first = true;
+    function L(v) { return (v && typeof v === 'object') ? (v[lang] || v.en || v.ru) : v; }
+    function ys(n) { return n === 1 ? [200] : n === 2 ? [133, 267] : [66, 200, 334]; }
+    function ts(n) { return n === 1 ? [200] : n === 2 ? [192, 208] : [188, 200, 212]; }
+    function node(x, y, n, d, core) {
+      var tx = core ? x + 65 : x + 16;
+      return '<g class="nd' + (core ? ' core' : '') + '" style="--d:' + d.toFixed(2) + 's"><rect x="' + x + '" y="' + y + '" width="130" height="' + (core ? 100 : 52) + '" rx="' + (core ? 16 : 12) + '"/>' +
+        '<text class="nt" x="' + tx + '" y="' + (core ? y + 44 : y + 23) + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.t)) + '</text>' +
+        '<text class="ns" x="' + tx + '" y="' + (core ? y + 64 : y + 40) + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.s)) + '</text></g>';
     }
-    (async function run() {
-      await sleep(1500);
-      while (alive) {
-        term.innerHTML = '';
-        for (var i = 0; i < lines.length; i++) {
-          var L = lines[i], row = document.createElement('span');
-          row.className = 'l ' + L.c; term.appendChild(row);
-          if (L.type) {
-            var cur = document.createElement('span'); cur.className = 'cur';
-            for (var k = 1; k <= L.t.length; k++) { row.textContent = L.t.slice(0, k); row.appendChild(cur); await sleep(48); }
-            cur.remove(); await sleep(500);
-          } else { await sleep(430); row.innerHTML = tag(L.t); }
-        }
-        var end = document.createElement('span'); end.className = 'cur'; term.lastChild.appendChild(end);
-        await sleep(4200);
-      }
-    })();
-    document.addEventListener('visibilitychange', function () { alive = !document.hidden; });
+    function build(p) {
+      var base = first ? .5 : 0, step = first ? .13 : .07, d = '', lines = '', pk = '', i, k = 0;
+      var ly = ys(p.L.length), lt = ts(p.L.length), ry = ys(p.R.length), rt = ts(p.R.length);
+      var paths = [];
+      p.L.forEach(function (n, i) { paths.push('M130 ' + ly[i] + ' C172 ' + ly[i] + ' 158 ' + lt[i] + ' 195 ' + lt[i]); });
+      p.R.forEach(function (n, i) { paths.push('M325 ' + rt[i] + ' C362 ' + rt[i] + ' 348 ' + ry[i] + ' 390 ' + ry[i]); });
+      paths.forEach(function (dd, i) {
+        d += '<path id="vp' + i + '" d="' + dd + '"/>';
+        lines += '<use href="#vp' + i + '" class="ln"/><use href="#vp' + i + '" class="fl"/>';
+        pk += '<circle class="pkt" r="4.5"><animateMotion dur="2.6s" begin="' + (((i % 3) * .9) + (i >= p.L.length ? 1.3 : 0)).toFixed(1) + 's" repeatCount="indefinite" calcMode="linear"><mpath href="#vp' + i + '"/></animateMotion></circle>';
+      });
+      var nodes = '';
+      p.L.forEach(function (n, i) { nodes += node(0, ly[i] - 26, n, base + step * (k++)); });
+      nodes += node(195, 150, p.C, base + step * (k++), true);
+      p.R.forEach(function (n, i) { nodes += node(390, ry[i] - 26, n, base + step * (k++)); });
+      return '<svg class="viz" viewBox="0 0 520 400" role="img" aria-label="' + esc(t('viz_aria')) + '" xmlns="http://www.w3.org/2000/svg"><defs>' + d + '</defs>' + lines + nodes + pk + '</svg>';
+    }
+    function drawTabs() {
+      tabsEl.innerHTML = VZ.map(function (p, i) {
+        return '<button type="button" class="vtab" role="tab" data-i="' + i + '" aria-selected="' + (i === cur) + '">' + esc(t(p.tab)) + '</button>';
+      }).join('');
+    }
+    function paint() {
+      var p = VZ[cur];
+      host.innerHTML = build(p);
+      fileEl.textContent = p.file + ' · live';
+      capEl.textContent = t(p.cap);
+      moreBtn.textContent = t('more') + ' \u2192';
+      tabsEl.classList.toggle('auto', auto);
+      drawTabs();
+      first = false;
+    }
+    function schedule() {
+      clearTimeout(timer);
+      if (!auto || document.hidden) return;
+      timer = setTimeout(function () { cur = (cur + 1) % VZ.length; paint(); schedule(); }, 6000);
+    }
+    tabsEl.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('.vtab'); if (!b) return;
+      cur = +b.getAttribute('data-i'); auto = false; clearTimeout(timer); paint();
+    });
+    moreBtn.addEventListener('click', function () { openProject(VZ[cur].slug); });
+    if (card) {
+      card.addEventListener('mouseenter', function () { clearTimeout(timer); tabsEl.classList.remove('auto'); });
+      card.addEventListener('mouseleave', function () { if (auto) { tabsEl.classList.add('auto'); paint(); schedule(); } });
+    }
+    document.addEventListener('visibilitychange', schedule);
+    return function (restart) { paint(); if (restart) schedule(); };
+  })();
+
+  /* ------------------------------------------- ambient background: cursor spotlight (eased follow) */
+  (function () {
+    var bg = $('.bgfx');
+    if (!bg || reduce || !window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
+    var tx = innerWidth * 0.72, ty = innerHeight * 0.28, cx = tx, cy = ty, run = false, EASE = 0.045;
+    function step() {
+      cx += (tx - cx) * EASE; cy += (ty - cy) * EASE;
+      bg.style.setProperty('--mx', cx.toFixed(1) + 'px'); bg.style.setProperty('--my', cy.toFixed(1) + 'px');
+      if (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) requestAnimationFrame(step); else run = false;
+    }
+    window.addEventListener('pointermove', function (e) {
+      tx = e.clientX; ty = e.clientY;
+      if (!run) { run = true; requestAnimationFrame(step); }
+    }, { passive: true });
   })();
 
   /* ---------------------------------------------------- reveal on scroll */
@@ -132,6 +191,22 @@
   burger.addEventListener('click', function () { menu(!nav.classList.contains('open')); });
   links.forEach(function (l) { l.addEventListener('click', function () { menu(false); }); });
 
+  /* ------------------------------------------------------------ theme toggle */
+  var themeBtn = $('#theme'), themeMeta = $('meta[name="theme-color"]');
+  function curTheme() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+  function paintTheme() {
+    var l = curTheme() === 'light';
+    themeBtn.setAttribute('aria-pressed', l);
+    if (themeMeta) themeMeta.setAttribute('content', l ? '#f7f2e8' : '#181614');
+  }
+  themeBtn.addEventListener('click', function () {
+    var n = curTheme() === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', n);
+    try { localStorage.setItem('theme', n); } catch (e) {}
+    paintTheme();
+  });
+  paintTheme();
+
   /* ------------------------------------------------ images: find png/jpg/jpeg/webp */
   var EXTS = ['png', 'jpg', 'jpeg', 'webp'], probeCache = {};
   var BASE = cfg.PHOTO_BASE || '';
@@ -167,7 +242,7 @@
 
   /* ------------------------------------------------------------ dialogs (shared) */
   var pm = $('#pm'), pmBody = $('#pmBody'), cm = $('#cm'), cmBody = $('#cmBody'), lb = $('#lb'), lbImg = $('#lbImg');
-  var curSlug = null, curCert = null;
+  var curSlug = null, curCert = null, curTab = 'ov';
   function openDlg(d) { document.documentElement.classList.add('lock'); if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
   function closeDlg(d) { if (d.close) d.close(); else d.removeAttribute('open'); }
   function onClosed() { if (!pm.open && !cm.open && !lb.open) document.documentElement.classList.remove('lock'); }
@@ -191,15 +266,22 @@
     var h = '<div class="pm-band" style="--g:' + P.gradient + '"><span class="badge' + (P.done ? ' done' : '') + '">' + esc(t(P.done ? 'st_done' : 'st_wip')) + '</span></div>';
     h += '<header class="pm-head"><p class="pm-kicker">' + esc(c.kicker) + '</p><h2 id="pmTitle">' + esc(title) + '</h2><p class="pm-lead">' + esc(c.lead) + '</p></header>';
     h += '<div class="pm-meta">' + c.meta.map(function (x) { return '<div><small>' + esc(x[0]) + '</small><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_problem')) + '</h3><p>' + esc(c.problem) + '</p></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_solution')) + '</h3><p>' + esc(c.solution) + '</p></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_arch')) + '</h3><div class="pm-arch">' + c.arch.map(function (a) { return '<div><b>' + esc(a[0]) + '</b><p>' + esc(a[1]) + '</p></div>'; }).join('') + '</div></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_features')) + '</h3><ul class="pm-feat">' + c.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_stack')) + '</h3><div class="pm-stack">' + c.stack.map(function (g) { return '<div><h4>' + esc(g[0]) + '</h4><div class="chips">' + g[1].split(' / ').map(function (x) { return '<span class="chip">' + esc(x) + '</span>'; }).join('') + '</div></div>'; }).join('') + '</div></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_challenge')) + '</h3><p>' + esc(c.challenge) + '</p></section>';
-    h += '<section class="pm-sec"><h3>' + esc(t('m_learned')) + '</h3><p>' + esc(c.learned) + '</p></section>';
-    h += '<section class="pm-sec" id="pmShotsSec" hidden><h3>' + esc(t('m_shots')) + '</h3><div class="pm-shots" id="pmShots"></div></section>';
-    h += '<div class="pm-foot"><button type="button" class="btn gh" data-close>' + esc(t('m_close')) + '</button></div>';
+    var sec = function (title, body) { return '<section class="pm-sec"><h3>' + esc(title) + '</h3>' + body + '</section>'; };
+    var ov = sec(t('m_problem'), '<p>' + esc(c.problem) + '</p>') + sec(t('m_solution'), '<p>' + esc(c.solution) + '</p>') +
+      sec(t('m_challenge'), '<p>' + esc(c.challenge) + '</p>') + sec(t('m_learned'), '<p>' + esc(c.learned) + '</p>');
+    var ft = sec(t('m_features'), '<ul class="pm-feat">' + c.features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>');
+    var ar = sec(t('m_arch'), '<div class="pm-arch">' + c.arch.map(function (a) { return '<div><b>' + esc(a[0]) + '</b><p>' + esc(a[1]) + '</p></div>'; }).join('') + '</div>') +
+      sec(t('m_stack'), '<div class="pm-stack">' + c.stack.map(function (g) { return '<div><h4>' + esc(g[0]) + '</h4><div class="chips">' + g[1].split(' / ').map(function (x) { return '<span class="chip">' + esc(x) + '</span>'; }).join('') + '</div></div>'; }).join('') + '</div>');
+    var sh = sec(t('m_shots'), '<div class="pm-shots" id="pmShots"></div>');
+    var tabs = [['ov', t('tab_overview')], ['ft', t('m_features')], ['ar', t('m_arch')], ['sh', t('m_shots')]];
+    var active = curTab === 'sh' ? 'ov' : curTab;
+    h += '<div class="pm-tabs" role="tablist">' + tabs.map(function (x) {
+      return '<button type="button" class="pm-tab" role="tab" data-tab="' + x[0] + '" aria-selected="' + (x[0] === active) + '"' + (x[0] === 'sh' ? ' hidden id="pmShotsTab"' : '') + '>' + esc(x[1]) + '</button>';
+    }).join('') + '</div>';
+    [['ov', ov], ['ft', ft], ['ar', ar], ['sh', sh]].forEach(function (x) {
+      h += '<div class="pm-pane" role="tabpanel" data-pane="' + x[0] + '"' + (x[0] === active ? '' : ' hidden') + '>' + x[1] + '</div>';
+    });
+    h += '<div class="pm-foot">' + (P.gh ? '<a class="btn pri" href="' + esc(P.gh) + '" target="_blank" rel="noopener">GitHub</a> ' : '') + '<button type="button" class="btn gh" data-close>' + esc(t('m_close')) + '</button></div>';
     pmBody.innerHTML = h;
     // screenshots: shown only for files that exist (no empty frames)
     projectImages(slug, P).then(function (urls) {
@@ -207,11 +289,17 @@
       $('#pmShots').innerHTML = urls.map(function (u, i) {
         return '<figure class="shot"><div class="bar"><i></i><i></i><i></i></div><div class="frame"><img src="' + esc(u) + '" alt="' + esc(title + ' ' + (i + 1)) + '" loading="lazy"></div></figure>';
       }).join('');
-      $('#pmShotsSec').hidden = false;
+      $('#pmShotsTab').hidden = false;
     });
   }
+  function setTab(name) {
+    curTab = name;
+    $$('.pm-tab', pmBody).forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === name); });
+    $$('.pm-pane', pmBody).forEach(function (p) { p.hidden = p.getAttribute('data-pane') !== name; });
+  }
+  pmBody.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.pm-tab'); if (b) setTab(b.getAttribute('data-tab')); });
   function openProject(slug) {
-    curSlug = slug; renderProject(slug); pmBody.scrollTop = 0; openDlg(pm);
+    curSlug = slug; curTab = 'ov'; renderProject(slug); pmBody.scrollTop = 0; openDlg(pm);
   }
   $$('[data-open]').forEach(function (b) { b.addEventListener('click', function () { openProject(b.getAttribute('data-open')); }); });
 
@@ -326,7 +414,7 @@
     $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-l') === l); });
     var cv = (cfg.CV && (cfg.CV[l] || cfg.CV.ru)) || '';
     $$('[data-cv]').forEach(function (a) { if (cv) a.setAttribute('href', cv); });
-    renderCerts(); copyLabel();
+    renderCerts(); copyLabel(); vizSetup(false);
     if (curSlug && pm.open) { var y = pmBody.scrollTop; renderProject(curSlug); pmBody.scrollTop = y; }
     if (curCert !== null && cm.open) renderCert(curCert);
     var on = $('.nav a.on'); if (on) place(on);
@@ -335,5 +423,6 @@
   $$('.lang button').forEach(function (b) { b.addEventListener('click', function () { applyLang(b.getAttribute('data-l'), true); }); });
 
   applyLang(pickLang(), false);
+  vizSetup(true);
   onScroll();
 })();
