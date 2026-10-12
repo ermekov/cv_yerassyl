@@ -59,30 +59,34 @@
     ];
     var cur = 0, auto = !reduce, timer = null, first = true;
     function L(v) { return (v && typeof v === 'object') ? (v[lang] || v.en || v.ru) : v; }
+    var mq = window.matchMedia ? matchMedia('(max-width: 520px)') : { matches: false };
     function ys(n) { return n === 1 ? [200] : n === 2 ? [133, 267] : [66, 200, 334]; }
     function ts(n) { return n === 1 ? [200] : n === 2 ? [192, 208] : [188, 200, 212]; }
-    function node(x, y, n, d, core) {
-      var tx = core ? x + 65 : x + 16;
-      return '<g class="nd' + (core ? ' core' : '') + '" style="--d:' + d.toFixed(2) + 's"><rect x="' + x + '" y="' + y + '" width="130" height="' + (core ? 100 : 52) + '" rx="' + (core ? 16 : 12) + '"/>' +
-        '<text class="nt" x="' + tx + '" y="' + (core ? y + 44 : y + 23) + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.t)) + '</text>' +
-        '<text class="ns" x="' + tx + '" y="' + (core ? y + 64 : y + 40) + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.s)) + '</text></g>';
+    function node(x, y, n, d, core, g) {
+      var h = core ? 100 : g.nh, tx = core ? x + g.w / 2 : x + (g.narrow ? 12 : 16);
+      var ty = core ? y + 44 : (g.narrow ? y + 28 : y + 23), sy = core ? y + 64 : y + 40;
+      return '<g class="nd' + (core ? ' core' : '') + '" style="--d:' + d.toFixed(2) + 's"><rect x="' + x + '" y="' + y + '" width="' + g.w + '" height="' + h + '" rx="' + (core ? 16 : 12) + '"/>' +
+        '<text class="nt" x="' + tx + '" y="' + ty + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.t)) + '</text>' +
+        '<text class="ns" x="' + tx + '" y="' + sy + '"' + (core ? ' text-anchor="middle"' : '') + '>' + esc(L(n.s)) + '</text></g>';
     }
     function build(p) {
-      var base = first ? .5 : 0, step = first ? .13 : .07, d = '', lines = '', pk = '', i, k = 0;
+      var narrow = mq.matches, g = { narrow: narrow, w: narrow ? 118 : 130, gap: narrow ? 34 : 65, nh: narrow ? 44 : 52 };
+      var cx = g.w + g.gap, rx = 2 * g.w + 2 * g.gap, vw = 3 * g.w + 2 * g.gap;
+      var base = first ? .5 : 0, step = first ? .13 : .07, d = '', lines = '', pk = '', k = 0;
       var ly = ys(p.L.length), lt = ts(p.L.length), ry = ys(p.R.length), rt = ts(p.R.length);
-      var paths = [];
-      p.L.forEach(function (n, i) { paths.push('M130 ' + ly[i] + ' C172 ' + ly[i] + ' 158 ' + lt[i] + ' 195 ' + lt[i]); });
-      p.R.forEach(function (n, i) { paths.push('M325 ' + rt[i] + ' C362 ' + rt[i] + ' 348 ' + ry[i] + ' 390 ' + ry[i]); });
+      var c1 = Math.round(g.gap * .65), c2 = Math.round(g.gap * .43), paths = [];
+      p.L.forEach(function (n, i) { paths.push('M' + g.w + ' ' + ly[i] + ' C' + (g.w + c1) + ' ' + ly[i] + ' ' + (cx - c2) + ' ' + lt[i] + ' ' + cx + ' ' + lt[i]); });
+      p.R.forEach(function (n, i) { paths.push('M' + (cx + g.w) + ' ' + rt[i] + ' C' + (cx + g.w + c2) + ' ' + rt[i] + ' ' + (rx - c1) + ' ' + ry[i] + ' ' + rx + ' ' + ry[i]); });
       paths.forEach(function (dd, i) {
         d += '<path id="vp' + i + '" d="' + dd + '"/>';
         lines += '<use href="#vp' + i + '" class="ln"/><use href="#vp' + i + '" class="fl"/>';
         pk += '<circle class="pkt" r="4.5"><animateMotion dur="2.6s" begin="' + (((i % 3) * .9) + (i >= p.L.length ? 1.3 : 0)).toFixed(1) + 's" repeatCount="indefinite" calcMode="linear"><mpath href="#vp' + i + '"/></animateMotion></circle>';
       });
       var nodes = '';
-      p.L.forEach(function (n, i) { nodes += node(0, ly[i] - 26, n, base + step * (k++)); });
-      nodes += node(195, 150, p.C, base + step * (k++), true);
-      p.R.forEach(function (n, i) { nodes += node(390, ry[i] - 26, n, base + step * (k++)); });
-      return '<svg class="viz" viewBox="0 0 520 400" role="img" aria-label="' + esc(t('viz_aria')) + '" xmlns="http://www.w3.org/2000/svg"><defs>' + d + '</defs>' + lines + nodes + pk + '</svg>';
+      p.L.forEach(function (n, i) { nodes += node(0, ly[i] - g.nh / 2, n, base + step * (k++), false, g); });
+      nodes += node(cx, 150, p.C, base + step * (k++), true, g);
+      p.R.forEach(function (n, i) { nodes += node(rx, ry[i] - g.nh / 2, n, base + step * (k++), false, g); });
+      return '<svg class="viz' + (narrow ? ' narrow' : '') + '" viewBox="0 0 ' + vw + ' 400" role="img" aria-label="' + esc(t('viz_aria')) + '" xmlns="http://www.w3.org/2000/svg"><defs>' + d + '</defs>' + lines + nodes + pk + '</svg>';
     }
     function drawTabs() {
       tabsEl.innerHTML = VZ.map(function (p, i) {
@@ -114,6 +118,7 @@
       card.addEventListener('mouseleave', function () { if (auto) { tabsEl.classList.add('auto'); paint(); schedule(); } });
     }
     document.addEventListener('visibilitychange', schedule);
+    if (mq.addEventListener) mq.addEventListener('change', function () { paint(); });
     return function (restart) { paint(); if (restart) schedule(); };
   })();
 

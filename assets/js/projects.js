@@ -13,7 +13,7 @@ window.PROJECTS = {
   ru: {
     kicker: "Дипломный проект · AI · Full-Stack",
     lead: "AI-платформа аренды горного снаряжения — дипломный проект, реализованный от начала до конца.",
-    meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web · Worker"]],
+    meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web"]],
     problem: "Аренда горного снаряжения обычно сводится к переписке напрямую с прокатом — без структурированного способа сравнить оборудование, проверить наличие или получить подсказку под конкретный маршрут. Единой платформы с каталогом, бронированием и хоть каким-то интеллектуальным подбором не существовало.",
     solution: "Backend на Flask и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (теги активности, погода, уровень, наличие на складе), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Рядом с каталогом работает AI-чат-ассистент, который знает сайт и остатки товаров, а отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Авторизация — OTP и JWT; менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж (CSV для Excel).",
     arch: [
@@ -48,7 +48,7 @@ window.PROJECTS = {
   kk: {
     kicker: "Дипломдық жоба · AI · Full-Stack",
     lead: "Тау жабдықтарын жалға беретін AI-платформа: басынан аяғына дейін жасалған дипломдық жоба.",
-    meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web · Worker"]],
+    meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web"]],
     problem: "Тау жабдықтарын жалға алу әдетте жалға беру пунктімен тікелей жазысуға саяды: жабдықты салыстырудың, бар-жоғын тексерудің немесе нақты маршрутқа лайық жабдықты таңдаудың құрылымдалған жолы жоқ. Каталогы, брондауы және кем дегенде қандай да бір ақылды таңдауы бар бірыңғай платформа болмаған.",
     solution: "Flask-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (белсенділік тегтері, ауа райы, деңгей, қоймадағы бар-жоғы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат-ассистент жұмыс істейді, ал GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Авторизация OTP және JWT арқылы жүреді; менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын жүктейді (Excel-ге арналған CSV).",
     arch: [
@@ -83,7 +83,7 @@ window.PROJECTS = {
   en: {
     kicker: "Graduation project · AI · Full-Stack",
     lead: "An AI platform for renting mountain equipment: a graduation project built end to end.",
-    meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web · Worker"]],
+    meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web"]],
     problem: "Renting mountain gear usually comes down to messaging a rental shop directly, with no structured way to compare equipment, check availability or get a suggestion for a specific route. There was no single platform with a catalog, booking and at least some intelligent selection.",
     solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (activity tags, weather, level, stock availability) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Next to the catalog there is an AI chat assistant that knows the site and the product stock, and a separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Authentication uses OTP and JWT; the manager confirms orders, while the admin manages products and orders and exports sales analytics (CSV for Excel).",
     arch: [
