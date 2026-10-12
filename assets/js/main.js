@@ -238,9 +238,9 @@
   $$('.p[data-slug]').forEach(function (card) {
     if (!BASE) return;
     var slug = card.getAttribute('data-slug'), art = $('.art', card);
-    probe(BASE + slug + '/cover').then(function (u) { return u || probe(BASE + slug + '/1'); }).then(function (u) {
+    probe(BASE + slug + '/card').then(function (u) { return u || probe(BASE + slug + '/cover'); }).then(function (u) { return u || probe(BASE + slug + '/1'); }).then(function (u) {
       if (!u) return;
-      var d = document.createElement('div'); d.className = 'shot-bg'; d.style.backgroundImage = 'url("' + u + '")';
+      var d = document.createElement('div'); d.className = 'shot-bg'; d.style.setProperty('--img', 'url("' + new URL(u, document.baseURI).href + '")');
       art.appendChild(d); card.classList.add('has-img');
     });
   });

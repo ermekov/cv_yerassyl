@@ -619,3 +619,31 @@ html[data-theme="light"] .bgfx .b3{background:radial-gradient(circle,rgba(238,12
   .chl .copy-b b{display:none}
   .chl .copy-b{padding:9px 11px}
 }
+
+/* =====================================================================
+   Project cards: screenshot presented as a floating browser window
+   ===================================================================== */
+.p.has-img .art>*:not(.shot-bg){display:none}
+.art .shot-bg{
+  inset:11% 7% -10% 7%;
+  border-radius:12px 12px 0 0;
+  background:
+    radial-gradient(circle at 16px 11px,#f89c34 3.6px,transparent 4.2px) 0 0/100% 22px no-repeat,
+    radial-gradient(circle at 31px 11px,#6f675c 3.6px,transparent 4.2px) 0 0/100% 22px no-repeat,
+    radial-gradient(circle at 46px 11px,#6f675c 3.6px,transparent 4.2px) 0 0/100% 22px no-repeat,
+    linear-gradient(#1d1a17,#1d1a17) 0 0/100% 22px no-repeat,
+    var(--img) center var(--py,22px)/100% auto no-repeat;
+  background-color:#f4f1ea;
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 -6px 40px rgba(0,0,0,.25),0 30px 60px rgba(0,0,0,.5);
+  transform:translateY(0);
+  transition:transform .6s var(--ease),box-shadow .6s var(--ease);
+}
+.p[data-slug="peakrent-ai"] .art .shot-bg{background-color:#0a1628}
+.p:hover .art .shot-bg{transform:translateY(-8px)}
+.p.big .art{background:radial-gradient(70% 90% at 70% 10%,rgba(248,156,52,.35),transparent 70%),linear-gradient(160deg,#3a2f22,#5b4127 55%,#86602a)}
+@media(max-width:820px){
+  .p .art{min-height:0;aspect-ratio:16/10;flex:none}
+  .p.big .art{aspect-ratio:16/10}
+  .art .shot-bg{inset:12% 6% -10% 6%}
+}
+.p[data-slug="ai-business-assistant"]{--py:62%}
