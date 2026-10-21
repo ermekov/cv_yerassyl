@@ -9,17 +9,17 @@ window.PROJECTS = {
   title: "MountainRent AI — PeakRent.kz",
   gh: "https://github.com/ermekov/Mountain_equipment_rental",
   url: "https://cvyermekov.vercel.app/ru/projects/peakrent-ai",
-  files: ["1", "2", "3"],
+  card: "card.jpg", files: ["1.png", "2.png", "3.png"],
   ru: {
     kicker: "Дипломный проект · AI · Full-Stack",
     lead: "AI-платформа аренды горного снаряжения — дипломный проект, реализованный от начала до конца.",
     meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web"]],
     problem: "Аренда горного снаряжения обычно сводится к переписке напрямую с прокатом — без структурированного способа сравнить оборудование, проверить наличие или получить подсказку под конкретный маршрут. Единой платформы с каталогом, бронированием и хоть каким-то интеллектуальным подбором не существовало.",
-    solution: "Backend на Flask и frontend на Next.js — каталог, бронирование и рекомендательная логика вынесены в отдельные сервисы. Рекомендации сначала фильтруются по правилам (теги активности, погода, уровень, наличие на складе), а затем уточняются запросом к OpenAI, который работает уже с отфильтрованной выборкой — поэтому AI принимает решения на небольшом релевантном срезе каталога, а не гадает по всей базе. Рядом с каталогом работает AI-чат-ассистент, который знает сайт и остатки товаров, а отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Авторизация — OTP и JWT; менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж (CSV для Excel).",
+    solution: "Backend на Flask, frontend на Next.js, каталог, бронирование и рекомендации разделены на отдельные сервисы. Сначала рекомендации фильтруются по тегам активности, погоде, уровню и наличию на складе, потом запрос к OpenAI ранжирует только эту небольшую выборку. Рядом с каталогом работает AI-чат, который знает сайт и остатки товаров. Отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Вход по OTP и JWT. Менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж в CSV для Excel.",
     arch: [
       ["API-слой", "Flask отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
       ["Пайплайн рекомендаций", "Предфильтрация по тегам (активность, погода, уровень) и наличию на складе сужает список кандидатов, затем запрос к GPT-4o-mini ранжирует и объясняет получившийся шортлист — это удерживает стоимость и задержку под контролем."],
-      ["AI-ассистент","Чат-виджет на сайте получает контекст из каталога и базы — названия, цены и остатки — и отвечает по реальным данным, а не по догадке модели."],
+      ["AI-ассистент", "Чат-виджет берёт из каталога и базы названия, цены и остатки и отвечает по этим данным."],
       ["Внешние сервисы", "Погода через OpenWeatherMap, SMS-шлюз для OTP-кодов и платёжный сервис (демо Kaspi QR) подключены через отдельный слой сервисов, поэтому бизнес-логика отделена от маршрутов."],
       ["Деплой", "Backend запускается через Gunicorn, PostgreSQL — основной источник данных для каталога, бронирований и пользователей."]
     ],
@@ -42,19 +42,19 @@ window.PROJECTS = {
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
       ["Инфраструктура и сервисы", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
-    challenge: "Сложнее всего было сделать AI-рекомендации полезными, не превратив их в чёрный ящик — пришлось ограничить, что именно модель видит и решает, чтобы результат оставался объяснимым и достаточно быстрым для флоу бронирования, а не для чат-сценария.",
-    learned: "Как проектировать AI-функцию как ограниченный этап пайплайна, а не как универсального чат-бота, приклеенного к интерфейсу — и насколько «умная» фича на самом деле держится на дисциплинированной подготовке данных ещё до того, как в дело вступает модель."
+    challenge: "Сложнее всего было сделать рекомендации полезными и при этом объяснимыми. Я ограничил, что модель видит и что решает, чтобы ответ приходил быстро, прямо во время бронирования.",
+    learned: "AI-функцию удобнее проектировать как один ограниченный шаг в пайплайне. Качество «умной» функции почти целиком зависит от того, как подготовлены данные до запроса к модели."
   },
   kk: {
     kicker: "Дипломдық жоба · AI · Full-Stack",
     lead: "Тау жабдықтарын жалға беретін AI-платформа: басынан аяғына дейін жасалған дипломдық жоба.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web"]],
     problem: "Тау жабдықтарын жалға алу әдетте жалға беру пунктімен тікелей жазысуға саяды: жабдықты салыстырудың, бар-жоғын тексерудің немесе нақты маршрутқа лайық жабдықты таңдаудың құрылымдалған жолы жоқ. Каталогы, брондауы және кем дегенде қандай да бір ақылды таңдауы бар бірыңғай платформа болмаған.",
-    solution: "Flask-тегі backend және Next.js-тегі frontend: каталог, брондау және ұсыным логикасы бөлек сервистерге бөлінген. Ұсынымдар алдымен ережелер бойынша сүзгіден өтеді (белсенділік тегтері, ауа райы, деңгей, қоймадағы бар-жоғы), содан кейін OpenAI сұранысы арқылы нақтыланады. Ол тек сүзілген таңдаумен жұмыс істейді, сондықтан AI бүкіл дерекқорды болжамай, каталогтың шағын әрі өзекті бөлігінде шешім қабылдайды. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат-ассистент жұмыс істейді, ал GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Авторизация OTP және JWT арқылы жүреді; менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын жүктейді (Excel-ге арналған CSV).",
+    solution: "Backend Flask-те, frontend Next.js-те жазылған, каталог, брондау және ұсынымдар бөлек сервистерге бөлінген. Ұсынымдар алдымен белсенділік тегтері, ауа райы, деңгей және қоймадағы бар-жоғы бойынша сүзіледі, содан кейін OpenAI сұранысы тек осы шағын тізімді саралайды. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат жұмыс істейді. GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Кіру OTP және JWT арқылы. Менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын Excel-ге арналған CSV-ге жүктейді.",
     arch: [
       ["API қабаты", "Flask каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
       ["Ұсыным пайплайны", "Тегтер (белсенділік, ауа райы, деңгей) және қоймадағы бар-жоғы бойынша алдын ала сүзгі үміткерлерді қысқартады, содан кейін GPT-4o-mini сұранысы шыққан шағын тізімді саралап, түсіндіреді. Бұл шығын мен кідірісті бақылауда ұстайды."],
-      ["AI-ассистент","Сайттағы чат-виджет контексті каталог пен дерекқордан алады (атауы, бағасы, қалдығы), сондықтан модельдің болжамымен емес, нақты деректермен жауап береді."],
+      ["AI-ассистент", "Чат-виджет каталог пен дерекқордан атауларды, бағаларды және қалдықтарды алып, сол деректер бойынша жауап береді."],
       ["Сыртқы сервистер", "OpenWeatherMap арқылы ауа райы, OTP-кодтар үшін SMS-шлюз және төлем сервисі (демо Kaspi QR) бөлек сервис қабаты арқылы қосылған, сондықтан бизнес-логика маршруттардан бөлек."],
       ["Деплой", "Backend Gunicorn арқылы жұмыс істейді, PostgreSQL каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
     ],
@@ -77,19 +77,19 @@ window.PROJECTS = {
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
       ["Инфрақұрылым және сервистер", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
-    challenge: "Ең қиыны AI-ұсынымдарды «қара жәшікке» айналдырмай, пайдалы ету болды. Нәтиже түсіндірілетін және чат емес, брондау процесіне жететіндей жылдам болуы үшін модель нені көретінін және нені шешетінін шектеуге тура келді.",
-    learned: "AI-функцияны интерфейске жабыстырылған әмбебап чат-бот емес, пайплайндағы шектеулі қадам ретінде жобалауды үйрендім. Сондай-ақ «ақылды» функцияның шын мәнінде модель жұмысқа кіріспес бұрын деректерді тәртіппен дайындауға қаншалықты тәуелді екенін түсіндім."
+    challenge: "Ең қиыны ұсынымдарды пайдалы әрі түсінікті ету болды. Жауап брондау кезінде жылдам келуі үшін модель нені көретінін және нені шешетінін шектедім.",
+    learned: "AI-функцияны пайплайндағы бір шектеулі қадам ретінде жобалаған ыңғайлы екенін түсіндім. «Ақылды» функцияның сапасы модельге сұраныс жібермес бұрын деректердің қалай дайындалғанына тәуелді."
   },
   en: {
     kicker: "Graduation project · AI · Full-Stack",
     lead: "An AI platform for renting mountain equipment: a graduation project built end to end.",
     meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web"]],
     problem: "Renting mountain gear usually comes down to messaging a rental shop directly, with no structured way to compare equipment, check availability or get a suggestion for a specific route. There was no single platform with a catalog, booking and at least some intelligent selection.",
-    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendation logic split into separate services. Recommendations are first filtered by rules (activity tags, weather, level, stock availability) and then refined by an OpenAI request that works only with the filtered shortlist, so the AI decides on a small relevant slice of the catalog instead of guessing across the whole database. Next to the catalog there is an AI chat assistant that knows the site and the product stock, and a separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Authentication uses OTP and JWT; the manager confirms orders, while the admin manages products and orders and exports sales analytics (CSV for Excel).",
+    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendations split into separate services. Recommendations are first filtered by activity tags, weather, level and stock, and then an OpenAI request ranks only that short list. Next to the catalog there is an AI chat that knows the site and the stock. A separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Sign-in uses OTP and JWT. The manager confirms orders, and the admin manages products and orders and exports sales analytics as CSV for Excel.",
     arch: [
       ["API layer", "Flask serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
       ["Recommendation pipeline", "Tag-based prefiltering (activity, weather, level) and stock availability narrows the candidates, then a GPT-4o-mini request ranks and explains the resulting shortlist, which keeps cost and latency under control."],
-      ["AI assistant","The on-site chat widget gets its context from the catalog and the database (names, prices, stock), so it answers from real data rather than from the model’s guesses."],
+      ["AI assistant", "The chat widget takes product names, prices and stock from the catalog and the database and answers from that data."],
       ["External services", "Weather via OpenWeatherMap, an SMS gateway for OTP codes and a payment service (Kaspi QR demo) are connected through a separate service layer, so business logic stays apart from the routes."],
       ["Deployment", "The backend runs on Gunicorn, with PostgreSQL as the primary source of truth for the catalog, bookings and users."]
     ],
@@ -112,8 +112,8 @@ window.PROJECTS = {
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
       ["Infrastructure and services", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
-    challenge: "The hardest part was making AI recommendations useful without turning them into a black box. I had to limit what exactly the model sees and decides, so the result stays explainable and fast enough for a booking flow rather than a chat scenario.",
-    learned: "How to design an AI feature as a bounded step in a pipeline rather than a general-purpose chatbot bolted onto the UI, and how much a “smart” feature really depends on disciplined data preparation before the model even gets involved."
+    challenge: "The hardest part was keeping the recommendations useful and explainable. I limited what the model sees and decides, so the answer arrives quickly, right inside the booking flow.",
+    learned: "An AI feature is easier to design as one bounded step in a pipeline. How good a \"smart\" feature is depends mostly on how the data is prepared before the model is called."
   }
 },
 
@@ -124,18 +124,18 @@ window.PROJECTS = {
   title: "AI Business Assistant",
   gh: "",
   url: "https://cvyermekov.vercel.app/ru/projects/ai-business-assistant",
-  files: ["1", "2"],
+  card: false, files: [],   // нақты скриншот болмағанша карточкада иллюстрация тұрады; файл атын осында жазыңыз
   ru: {
     title: "AI-ассистент для бизнеса",
     kicker: "AI Engineering · Автоматизация · Интеграции",
     lead: "AI-ассистент, который ведёт бизнес-процессы в Telegram, WhatsApp и Instagram.",
     meta: [["Роль", "Один разработчик — backend и интеграции"], ["Каналы", "Telegram · WhatsApp · Instagram"], ["Слой данных", "PostgreSQL · Google Sheets"]],
     problem: "Малый бизнес, который ведёт процессы вручную через мессенджеры, теряет время на повторяющиеся структурированные задачи — приём заказов, фиксацию заявок, синхронизацию данных — которые не обязательно каждый раз делать руками.",
-    solution: "Backend-логику я реализовал на Python и интегрировал с API Telegram, WhatsApp и Instagram, чтобы все каналы вели в один и тот же workflow-движок. Ассистент собирает и структурирует входящие запросы, при необходимости обращается к внешним сервисам и записывает результат в PostgreSQL и Google Sheets — так у бизнеса всегда есть актуальные, доступные для анализа данные. Сама логика бота построена вокруг реальных бизнес-процессов, а не общих вопросов-ответов.",
+    solution: "Backend-логику я написал на Python и подключил API Telegram, WhatsApp и Instagram, так что все каналы попадают в один workflow-движок. Ассистент собирает и структурирует входящие запросы, при необходимости обращается к внешним сервисам и записывает результат в PostgreSQL и Google Sheets, где у бизнеса всегда актуальные данные для анализа. Логика бота построена вокруг процессов конкретного бизнеса: приём заявок, ответы на типовые вопросы, передача данных менеджеру.",
     arch: [
-      ["Приём из нескольких каналов", "Telegram, WhatsApp и Instagram ведут в один и тот же Python backend, поэтому логика workflow пишется один раз и переиспользуется для всех каналов, а не дублируется под каждую платформу."],
-      ["Логика workflow", "Входящие сообщения разбираются в структурированные запросы и направляются по бизнес-специфичной логике — именно это делает систему ассистентом, а не сценарным FAQ-ботом."],
-      ["Внешние интеграции", "Backend обращается к внешним API и сервисам по мере необходимости в рамках каждого workflow, а не держит всю логику изолированно внутри себя."],
+      ["Приём из нескольких каналов", "Telegram, WhatsApp и Instagram ведут в один Python backend, поэтому логику workflow я пишу один раз для всех каналов."],
+      ["Логика workflow", "Входящие сообщения разбираются в структурированные запросы и направляются по логике конкретного бизнеса."],
+      ["Внешние интеграции", "Внутри workflow backend обращается к внешним API и сервисам, когда это нужно."],
       ["Слой данных", "Структурированные результаты записываются в PostgreSQL как основной источник данных, а живая синхронизация с Google Sheets позволяет нетехническим сотрудникам смотреть данные без доступа к базе."]
     ],
     features: [
@@ -144,15 +144,15 @@ window.PROJECTS = {
       "Интеграция с внешними API и сервисами",
       "Структурированное хранение данных в PostgreSQL",
       "Живая синхронизация с Google Sheets для нетехнических сотрудников",
-      "Автоматизированные, повторяемые бизнес-процессы вместо ручной обработки"
+      "Повторяющиеся бизнес-процессы выполняются автоматически"
     ],
     stack: [
       ["Backend", "Python / API integration / PostgreSQL"],
       ["Каналы", "Telegram Bot API / WhatsApp Business API / Instagram Messaging API"],
       ["Автоматизация", "Google Sheets API / n8n / Workflow automation"]
     ],
-    challenge: "Сложнее всего было удержать единый workflow-движок под тремя разными платформами — у каждой свои особенности API и форматы сообщений — так, чтобы бизнес-логика не расползлась на три отдельные версии.",
-    learned: "Понял, что в «AI-чат-боте» для бизнеса ценность почти никогда не в самом диалоге — а в workflow и передаче данных за ним. Канал — это просто точка входа."
+    challenge: "Сложнее всего было удержать один workflow-движок на трёх платформах с разными API и форматами сообщений, чтобы бизнес-логика не разошлась на три версии.",
+    learned: "Понял, что ценность AI-бота для бизнеса в первую очередь в workflow и передаче данных, которые стоят за диалогом. Канал служит только точкой входа."
   },
   kk: {
     title: "Бизнеске арналған AI-ассистент",
@@ -160,11 +160,11 @@ window.PROJECTS = {
     lead: "Telegram, WhatsApp және Instagram-да бизнес-процестерді жүргізетін AI-ассистент.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend және интеграциялар"], ["Арналар", "Telegram · WhatsApp · Instagram"], ["Дерек қабаты", "PostgreSQL · Google Sheets"]],
     problem: "Процестерді мессенджерлер арқылы қолмен жүргізетін шағын бизнес қайталанатын құрылымдалған тапсырмаларға (тапсырыс қабылдау, өтінімдерді тіркеу, деректерді синхрондау) уақытын жоғалтады. Ал оларды әр жолы қолмен істеудің қажеті жоқ.",
-    solution: "Backend-логиканы Python-да жасап, Telegram, WhatsApp және Instagram API-ларымен біріктірдім, сонда барлық арна бір workflow-қозғалтқышқа келеді. Ассистент кіріс сұраныстарды жинап, құрылымдайды, қажет болса сыртқы сервистерге жүгінеді және нәтижені PostgreSQL мен Google Sheets-ке жазады. Осылайша бизнесте әрқашан өзекті, талдауға қолайлы деректер болады. Бот логикасы жалпы сұрақ-жауапқа емес, нақты бизнес-процестерге құрылған.",
+    solution: "Backend-логиканы Python-да жазып, Telegram, WhatsApp және Instagram API-ларын қостым, сонда барлық арна бір workflow-қозғалтқышқа түседі. Ассистент кіріс сұраныстарды жинап, құрылымдайды, қажет болса сыртқы сервистерге жүгінеді және нәтижені PostgreSQL мен Google Sheets-ке жазады, сонда бизнестің талдауға дайын өзекті деректері болады. Бот логикасы нақты бизнестің процестеріне құрылған: өтінім қабылдау, жиі сұрақтарға жауап беру, деректерді менеджерге беру.",
     arch: [
-      ["Көп арналы қабылдау", "Telegram, WhatsApp және Instagram бір Python backend-ке апарады, сондықтан workflow-логика бір рет жазылып, әр платформаға қайталанбай, барлық арна үшін қолданылады."],
-      ["Workflow-логика", "Кіріс хабарламалар құрылымдалған сұраныстарға талданып, бизнеске тән логика бойынша бағытталады. Дәл осы оны сценарийлі FAQ-боттан гөрі ассистент етеді."],
-      ["Сыртқы интеграциялар", "Backend әр workflow талап еткенде сыртқы API мен сервистерге жүгінеді, барлық логиканы өз ішінде жабық ұстамайды."],
+      ["Көп арналы қабылдау", "Telegram, WhatsApp және Instagram бір Python backend-ке апарады, сондықтан workflow-логиканы барлық арна үшін бір рет жазамын."],
+      ["Workflow-логика", "Кіріс хабарламалар құрылымдалған сұраныстарға талданып, нақты бизнестің логикасы бойынша бағытталады."],
+      ["Сыртқы интеграциялар", "Workflow ішінде backend қажет кезде сыртқы API мен сервистерге жүгінеді."],
       ["Дерек қабаты", "Құрылымдалған нәтижелер негізгі дерек көзі ретінде PostgreSQL-ге жазылады, ал Google Sheets-пен тірі синхрондау техникалық емес қызметкерлерге дерекқорға кірмей-ақ деректерді көруге мүмкіндік береді."]
     ],
     features: [
@@ -173,7 +173,7 @@ window.PROJECTS = {
       "Сыртқы API мен сервистермен интеграция",
       "PostgreSQL-де құрылымдалған деректерді сақтау",
       "Техникалық емес қызметкерлерге арналған Google Sheets-пен тірі синхрондау",
-      "Қолмен өңдеудің орнына автоматтандырылған, қайталанатын бизнес-процестер"
+      "Қайталанатын бизнес-процестер автоматты түрде орындалады"
     ],
     stack: [
       ["Backend", "Python / API integration / PostgreSQL"],
@@ -181,7 +181,7 @@ window.PROJECTS = {
       ["Автоматтандыру", "Google Sheets API / n8n / Workflow automation"]
     ],
     challenge: "Ең қиыны әрқайсысының өз API ерекшеліктері мен хабарлама форматтары бар үш түрлі платформада бір workflow-қозғалтқышты ұстап тұру болды, сонда бизнес-логика үш бөлек нұсқаға таралып кетпеді.",
-    learned: "Бизнеске арналған «AI-чат-боттың» құндылығы диалогтың өзінде емес, оның артындағы workflow мен деректер беруде екенін түсіндім. Арна тек кіру нүктесі."
+    learned: "Бизнеске арналған AI-боттың құндылығы бірінші кезекте диалогтың артындағы workflow мен деректер беруде екенін түсіндім. Арна тек кіру нүктесі."
   },
   en: {
     title: "AI Assistant for Business",
@@ -189,11 +189,11 @@ window.PROJECTS = {
     lead: "An AI assistant that runs business processes in Telegram, WhatsApp and Instagram.",
     meta: [["Role", "Solo developer: backend and integrations"], ["Channels", "Telegram · WhatsApp · Instagram"], ["Data layer", "PostgreSQL · Google Sheets"]],
     problem: "Small businesses that run processes by hand through messengers lose time on repetitive, structured tasks such as taking orders, logging requests and syncing data, which do not have to be done manually every time.",
-    solution: "I implemented the backend logic in Python and integrated it with the Telegram, WhatsApp and Instagram APIs, so all channels lead into the same workflow engine. The assistant collects and structures incoming requests, calls external services when needed and writes the result to PostgreSQL and Google Sheets, so the business always has up-to-date data that is easy to analyze. The bot logic is built around real business processes rather than generic questions and answers.",
+    solution: "I wrote the backend logic in Python and connected the Telegram, WhatsApp and Instagram APIs, so all channels feed into one workflow engine. The assistant collects and structures incoming requests, calls external services when needed and writes the result to PostgreSQL and Google Sheets, where the business always has current data to analyze. The bot logic follows the processes of a specific business: taking requests, answering common questions and passing data to a manager.",
     arch: [
-      ["Multi-channel intake", "Telegram, WhatsApp and Instagram all lead into the same Python backend, so workflow logic is written once and reused for every channel instead of being duplicated per platform."],
-      ["Workflow logic", "Incoming messages are parsed into structured requests and routed through business-specific logic. That is what makes it an assistant rather than a scripted FAQ bot."],
-      ["External integrations", "The backend calls external APIs and services as each workflow requires, instead of keeping all logic sealed inside itself."],
+      ["Multi-channel intake", "Telegram, WhatsApp and Instagram all lead into the same Python backend, so I write the workflow logic once for every channel."],
+      ["Workflow logic", "Incoming messages are parsed into structured requests and routed through the logic of the specific business."],
+      ["External integrations", "Within a workflow, the backend calls external APIs and services when it needs them."],
       ["Data layer", "Structured results are written to PostgreSQL as the primary source of truth, while live sync with Google Sheets lets non-technical staff view the data without database access."]
     ],
     features: [
@@ -202,7 +202,7 @@ window.PROJECTS = {
       "Integration with external APIs and services",
       "Structured data storage in PostgreSQL",
       "Live Google Sheets sync for non-technical staff",
-      "Automated, repeatable business processes instead of manual handling"
+      "Repeatable business processes run automatically"
     ],
     stack: [
       ["Backend", "Python / API integration / PostgreSQL"],
@@ -210,7 +210,7 @@ window.PROJECTS = {
       ["Automation", "Google Sheets API / n8n / Workflow automation"]
     ],
     challenge: "The hardest part was keeping a single workflow engine running on three different platforms, each with its own API quirks and message formats, so that the business logic would not split into three separate versions.",
-    learned: "In a business “AI chatbot” the value is almost never in the dialog itself but in the workflow and data handoff behind it. The channel is just an entry point."
+    learned: "The value of a business AI bot lies mostly in the workflow and data handoff behind the dialog. The channel is only an entry point."
   }
 },
 
@@ -221,7 +221,7 @@ window.PROJECTS = {
   title: "Ken Tereze AI",
   gh: "",
   url: "https://cvyermekov.vercel.app/ru/projects/ken-tereze-ai",
-  files: ["1", "2"],
+  card: "1.png", files: ["1.png", "2.png"],
   ru: {
     kicker: "Python · AI · Автоматизация",
     lead: "Telegram-бот для дилеров: принимает PDF-заказ на окна, рассчитывает стоимость по материалам из базы и после согласия дилера передаёт заказ менеджеру.",
@@ -232,7 +232,7 @@ window.PROJECTS = {
       ["Приём", "Дилер отправляет PDF-заказ Telegram-боту. Бот передаёт файл в конвейер обработки и остаётся отзывчивым, пока идёт разбор."],
       ["Парсинг", "Отдельный парсер извлекает из PDF структурированные поля: размеры изделий, количество и материалы (профиль, стекло, фурнитура, ручки и другое)."],
       ["Расчёт стоимости", "Каждая позиция заказа сопоставляется с материалами и ценами в базе данных (около 400 позиций), из них складывается итоговая сумма — независимо от цены, указанной в самом PDF."],
-      ["AI-диалог", "Ответы дилеру формируются через OpenAI API, а стоимость определяется по данным из базы, поэтому сумма не зависит от «фантазии» модели."],
+      ["AI-диалог", "Ответы дилеру формирует OpenAI API. Стоимость считается по данным из базы, поэтому модель на сумму не влияет."],
       ["Подтверждение", "Бот показывает дилеру сумму. Если дилер принимает расчёт, заказ отправляется менеджеру в Telegram для дальнейшей работы."],
       ["Хранение данных", "Заказы, разобранные параметры, материалы и рассчитанные цены хранятся в базе данных."]
     ],
@@ -263,7 +263,7 @@ window.PROJECTS = {
       ["Қабылдау", "Дилер PDF-тапсырысты Telegram-ботқа жібереді. Бот файлды өңдеу конвейеріне береді және талдау жүріп жатқанда жылдам жауап беріп тұрады."],
       ["Талдау", "Бөлек парсер PDF-тен құрылымдалған өрістерді шығарады: бұйым өлшемдері, саны және материалдар (профиль, әйнек, фурнитура, тұтқалар және басқа)."],
       ["Құнды есептеу", "Тапсырыстың әр позициясы дерекқордағы материалдар мен бағалармен (шамамен 400 позиция) салыстырылып, түпкілікті сома жиналады. Бұл PDF-тегі бағадан тәуелсіз."],
-      ["AI-диалог", "Дилерге жауаптар OpenAI API арқылы қалыптасады, ал құн дерекқордағы деректер бойынша анықталады, сондықтан сома модельдің «қиялына» тәуелсіз."],
+      ["AI-диалог", "Дилерге жауаптарды OpenAI API қалыптастырады. Құн дерекқордағы деректер бойынша есептеледі, сондықтан модель сомаға әсер етпейді."],
       ["Растау", "Бот дилерге соманы көрсетеді. Дилер есептеуді қабылдаса, тапсырыс әрі қарай жұмыс істеу үшін менеджерге Telegram арқылы жіберіледі."],
       ["Деректерді сақтау", "Тапсырыстар, талданған параметрлер, материалдар және есептелген бағалар дерекқорда сақталады."]
     ],
@@ -294,7 +294,7 @@ window.PROJECTS = {
       ["Intake", "The dealer sends a PDF order to the Telegram bot. The bot hands the file to a processing pipeline and stays responsive while parsing runs."],
       ["Parsing", "A dedicated parser extracts structured fields from the PDF: item dimensions, quantity and materials (profile, glass, hardware, handles and more)."],
       ["Cost calculation", "Every order item is matched against the materials and prices in the database (about 400 items) to build the total, independent of the price stated in the PDF."],
-      ["AI dialog", "Replies to the dealer are generated through the OpenAI API, while the cost is determined from the data in the database, so the amount does not depend on the model’s guesswork."],
+      ["AI dialog", "The OpenAI API writes the replies to the dealer. The cost is calculated from the data in the database, so the model has no effect on the amount."],
       ["Confirmation", "The bot shows the dealer the total. If the dealer accepts the calculation, the order is sent to a manager in Telegram for further work."],
       ["Data storage", "Orders, parsed parameters, materials and calculated prices are stored in the database."]
     ],

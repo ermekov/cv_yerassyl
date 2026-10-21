@@ -80,7 +80,9 @@
       paths.forEach(function (dd, i) {
         d += '<path id="vp' + i + '" d="' + dd + '"/>';
         lines += '<use href="#vp' + i + '" class="ln"/><use href="#vp' + i + '" class="fl"/>';
-        pk += '<circle class="pkt" r="4.5"><animateMotion dur="2.6s" begin="' + (((i % 3) * .9) + (i >= p.L.length ? 1.3 : 0)).toFixed(1) + 's" repeatCount="indefinite" calcMode="linear"><mpath href="#vp' + i + '"/></animateMotion></circle>';
+        var bg = (((i % 3) * .9) + (i >= p.L.length ? 1.3 : 0)).toFixed(1) + 's';
+        // hidden until its motion starts, otherwise the dot waits at the svg origin
+        pk += '<circle class="pkt" r="4.5" opacity="0"><set attributeName="opacity" to="1" begin="' + bg + '"/><animateMotion dur="2.6s" begin="' + bg + '" repeatCount="indefinite" calcMode="linear"><mpath href="#vp' + i + '"/></animateMotion></circle>';
       });
       var nodes = '';
       p.L.forEach(function (n, i) { nodes += node(0, ly[i] - g.nh / 2, n, base + step * (k++), false, g); });
@@ -216,6 +218,7 @@
   var EXTS = ['png', 'jpg', 'jpeg', 'webp'], probeCache = {};
   var BASE = cfg.PHOTO_BASE || '';
   function probe(base) {
+    if (/\.(png|jpe?g|webp|avif)$/i.test(base)) return Promise.resolve(base);   // exact name given: no guessing
     if (probeCache[base]) return probeCache[base];
     probeCache[base] = new Promise(function (res) {
       var i = 0;
@@ -234,11 +237,15 @@
     return Promise.all(P.files.map(function (f) { return probe(BASE + slug + '/' + f); })).then(function (a) { return a.filter(Boolean); });
   }
 
-  /* project card art: cover.* or 1.* replaces the illustration when the file exists */
+  /* project card art: PROJECTS[slug].card, else card.* / cover.* / 1.* replaces the illustration */
   $$('.p[data-slug]').forEach(function (card) {
     if (!BASE) return;
     var slug = card.getAttribute('data-slug'), art = $('.art', card);
-    probe(BASE + slug + '/card').then(function (u) { return u || probe(BASE + slug + '/cover'); }).then(function (u) { return u || probe(BASE + slug + '/1'); }).then(function (u) {
+    var PR = window.PROJECTS && window.PROJECTS[slug];
+    if (PR && PR.card === false) return;                       // keep the built-in illustration
+    var first = PR && PR.card ? probe(BASE + slug + '/' + PR.card)
+      : probe(BASE + slug + '/card').then(function (u) { return u || probe(BASE + slug + '/cover'); }).then(function (u) { return u || probe(BASE + slug + '/1'); });
+    first.then(function (u) {
       if (!u) return;
       var d = document.createElement('div'); d.className = 'shot-bg'; d.style.setProperty('--img', 'url("' + new URL(u, document.baseURI).href + '")');
       art.appendChild(d); card.classList.add('has-img');

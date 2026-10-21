@@ -42,7 +42,7 @@ google-apps-script/Code.gs     форма → Google Sheets скрипті
 | Сертификат суреттері | `assets/img/certs/<аты>.webp` | Атаулары `assets/js/certs.js` ішінде |
 
 `<жоба>` папкалары: `peakrent-ai` (1–3), `ai-business-assistant` (1–2), `ken-tereze-ai` (1–2).
-Суреттің кеңейтуі `png`, `jpg`, `jpeg` немесе `webp` бола алады, сайт өзі табады.
+Суреттің кеңейтуі `png`, `jpg`, `jpeg` немесе `webp` бола алады. Файл атын `assets/js/projects.js` ішіндегі `card` және `files` өрістеріне кеңейтуімен жазыңыз (мысалы `1.png`), сонда сайт файлды іздемейді және консольде 404 қатесі шықпайды. Кеңейтусіз жазсаңыз, сайт өзі іздеп табады.
 Ұсыныс: ені 1400–1600 px, көлемі 500 KB-тан аз, қатынасы шамамен 16:10.
 
 ## 4. Мәтінді өзгерту
@@ -66,5 +66,5 @@ google-apps-script/Code.gs     форма → Google Sheets скрипті
 **Vercel:** папканы GitHub-қа жүктеңіз → vercel.com → *Add New Project* → репозиторийді таңдаңыз → Framework: **Other** → Deploy.
 Кейін фото не мәтін өзгерткенде: `git add . && git commit -m "update" && git push`, Vercel өзі жаңартады.
 
-**Домен өзгерсе:** `index.html` ішіндегі `canonical`, `og:url`, `og:image`, `twitter:image` жолдарындағы `https://cvyermekov.vercel.app` адресін жаңасына ауыстырыңыз.
+**Домен өзгерсе:** `index.html` ішіндегі `canonical`, `og:url`, `og:image`, `twitter:image` жолдарындағы `https://cv-yerassyl.vercel.app` адресін жаңасына ауыстырыңыз.
 Сонда Telegram/LinkedIn-де сілтеме әдемі превьюмен шығады.
