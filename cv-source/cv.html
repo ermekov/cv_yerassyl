@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>CV — Ерасыл Ермеков (Yerassyl Yermekov), Junior Python / Backend Developer</title>
+<style>
+  @page { size: A4; margin: 10mm 13mm 9mm; }
+  :root { --navy: #0b3a6e; --ink: #1d2733; --muted: #5b6673; --line: #c9d3de; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 9.5pt; line-height: 1.38; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  a { color: inherit; text-decoration: none; }
+
+  /* header */
+  .top { display: grid; grid-template-columns: 25mm 1fr; gap: 6mm; align-items: start; }
+  .photo { width: 25mm; height: 33mm; object-fit: cover; border-radius: 2mm; display: block; }
+  h1 { margin: 0; font-size: 21pt; line-height: 1.1; font-weight: 700; color: var(--navy); letter-spacing: -.01em; }
+  .latin { margin: 1mm 0 0; font-size: 9.5pt; color: var(--muted); }
+  .role { margin: 1.6mm 0 2.4mm; font-size: 12.5pt; font-weight: 700; color: var(--navy); }
+  .contacts { display: grid; grid-template-columns: 1fr 1fr; gap: .6mm 6mm; margin: 0; }
+  .contacts div { display: flex; gap: 2mm; min-width: 0; }
+  .contacts dt { flex: none; width: 19mm; font-weight: 600; }
+  .contacts dd { margin: 0; overflow-wrap: anywhere; }
+
+  /* sections */
+  h2 { margin: 4.6mm 0 1.8mm; padding-bottom: .9mm; font-size: 10.5pt; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; color: var(--navy); border-bottom: .9pt solid var(--navy); }
+  p { margin: 0; }
+  .row { display: flex; justify-content: space-between; gap: 4mm; align-items: baseline; }
+  .row b { font-weight: 700; }
+  .when { flex: none; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .sub { color: var(--muted); }
+
+  .proj { margin-top: 2.2mm; break-inside: avoid; }
+  .proj:first-of-type { margin-top: 0; }
+  .stack { margin: .6mm 0 .8mm; font-size: 8.6pt; color: var(--muted); }
+  ul { margin: 0; padding-left: 4.2mm; }
+  li { margin: .25mm 0; }
+  li::marker { color: var(--navy); }
+  .link { color: var(--navy); font-weight: 600; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8mm; }
+  .skills div { margin: .6mm 0; }
+  .skills b { font-weight: 600; }
+  .langs div { margin: .5mm 0; }
+  .certs li { margin: .3mm 0; }
+  .certs .yr { float: right; padding-left: 2mm; font-weight: 600; }
+  .note { margin-top: 1.5mm; font-size: 8.6pt; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <img class="photo" src="photo-crop.png" alt="Ерасыл Ермеков">
+  <div>
+    <h1>ЕРАСЫЛ ЕРМЕКОВ</h1>
+    <p class="latin">Yerassyl Yermekov</p>
+    <p class="role">Junior Python / Backend Developer</p>
+    <dl class="contacts">
+      <div><dt>Город:</dt><dd>Атырау / Астана</dd></div>
+      <div><dt>Формат:</dt><dd>офис или удалённо</dd></div>
+      <div><dt>Телефон:</dt><dd><a href="tel:+77089898191">+7 708 989 81 91</a></dd></div>
+      <div><dt>Telegram:</dt><dd><a href="https://t.me/eeermekov">@eeermekov</a></dd></div>
+      <div><dt>Email:</dt><dd><a href="mailto:ermekov_erasil@icloud.com">ermekov_erasil@icloud.com</a></dd></div>
+      <div><dt>GitHub:</dt><dd><a href="https://github.com/ermekov">github.com/ermekov</a></dd></div>
+      <div><dt>Портфолио:</dt><dd><a class="link" href="https://cv-yerassyl.vercel.app/">cv-yerassyl.vercel.app</a></dd></div>
+      <div><dt>LinkedIn:</dt><dd><a href="https://www.linkedin.com/in/yerassyl-yermekov-08b4b2300/">linkedin.com/in/yerassyl-yermekov</a></dd></div>
+    </dl>
+  </div>
+</header>
+
+<h2>О себе</h2>
+<p>Выпускник IITU по специальности Software Engineering (2026). Пишу backend на Python (Flask, FastAPI), работаю с PostgreSQL, REST API и внешними интеграциями, делаю Telegram-ботов и AI-функции на OpenAI API. Ищу позицию Junior Python / Backend Developer.</p>
+
+<h2>Образование</h2>
+<div class="row"><b>Бакалавр: Информационные технологии / Программная инженерия (Software Engineering)</b><span class="when">2022 – 2026</span></div>
+<p class="sub">Международный университет информационных технологий (IITU), Алматы, Казахстан</p>
+
+<h2>Проекты</h2>
+
+<div class="proj">
+  <div class="row"><b>MountainRent AI / PeakRent.kz · дипломный проект</b><span class="when">2025 – 2026 · завершён</span></div>
+  <p class="stack">Python, Flask, SQLAlchemy, PostgreSQL, JWT, OpenAI API (GPT-4o-mini), Next.js</p>
+  <ul>
+    <li>Разработал backend на Flask: REST API для каталога, бронирований, отзывов и рекомендаций, база данных PostgreSQL через SQLAlchemy.</li>
+    <li>Сделал AI-подбор снаряжения: фильтрация по тегам активности, погоде (OpenWeatherMap), уровню и наличию, затем ранжирование через GPT-4o-mini.</li>
+    <li>Добавил AI-чат, который отвечает по данным каталога: названия, цены и остатки.</li>
+    <li>Реализовал вход по OTP и JWT, роли клиент / менеджер / администратор и выгрузку аналитики продаж в CSV.</li>
+    <li>Код: <a class="link" href="https://github.com/ermekov/Mountain_equipment_rental">github.com/ermekov/Mountain_equipment_rental</a></li>
+  </ul>
+</div>
+
+<div class="proj">
+  <div class="row"><b>Ken Tereze AI · Telegram-бот для дилеров</b><span class="when">2026 · в разработке</span></div>
+  <p class="stack">Python, FastAPI, PostgreSQL, SQLAlchemy, Telegram Bot API, OpenAI API</p>
+  <ul>
+    <li>Бот принимает PDF-заказы дилеров на окна и извлекает размеры, количество и материалы.</li>
+    <li>Считает стоимость по базе материалов (около 400 позиций: профиль, стекло, фурнитура, ручки).</li>
+    <li>Ответы дилеру формирует OpenAI API; после согласия дилера заказ уходит менеджеру в Telegram.</li>
+  </ul>
+</div>
+
+<div class="proj">
+  <div class="row"><b>AI-ассистент для бизнеса · Telegram, WhatsApp, Instagram</b><span class="when">2026 · в разработке</span></div>
+  <p class="stack">Python, PostgreSQL, Google Sheets API, n8n, API Telegram / WhatsApp / Instagram</p>
+  <ul>
+    <li>Пишу backend-логику на Python: один workflow-движок для трёх каналов.</li>
+    <li>Ассистент принимает заявки, отвечает на типовые вопросы и передаёт данные менеджеру.</li>
+    <li>Данные сохраняются в PostgreSQL и Google Sheets.</li>
+  </ul>
+</div>
+
+<div class="cols">
+  <section>
+    <h2>Навыки</h2>
+    <div class="skills">
+      <div><b>Backend:</b> Python, Flask, FastAPI, Django, REST API, SQLAlchemy</div>
+      <div><b>Базы данных:</b> PostgreSQL, SQL</div>
+      <div><b>AI и автоматизация:</b> OpenAI API, LLM-интеграции, Prompt Engineering, Telegram Bot API, n8n, Google Sheets API</div>
+      <div><b>Инструменты:</b> Git, Docker, Claude Code, Codex</div>
+    </div>
+    <h2>Языки</h2>
+    <div class="langs">
+      <div><b>Казахский</b>: родной</div>
+      <div><b>Русский</b>: свободный</div>
+      <div><b>Английский</b>: Pre-Intermediate</div>
+    </div>
+  </section>
+  <section>
+    <h2>Сертификаты</h2>
+    <ul class="certs">
+      <li><span class="yr">2025</span>Prompt Engineering for ChatGPT, Vanderbilt University</li>
+      <li><span class="yr">2025</span>AI for Everyone, DeepLearning.AI</li>
+      <li><span class="yr">2024</span>Algorithmic Toolbox, UC San Diego</li>
+      <li><span class="yr">2024</span>Data Structures, UC San Diego и HSE</li>
+      <li><span class="yr">2024</span>Interactive SQL Simulator, ДВФУ, с отличием</li>
+      <li><span class="yr">2024</span>HTML, CSS and JavaScript, Johns Hopkins University</li>
+      <li><span class="yr">2024</span>UI / UX Design (специализация), CalArts</li>
+      <li><span class="yr">2023</span>Python Generation, с отличием</li>
+    </ul>
+    <p class="note">Coursera и Stepik. Ссылки для проверки: <a class="link" href="https://cv-yerassyl.vercel.app/#certs">cv-yerassyl.vercel.app</a></p>
+  </section>
+</div>
+
+</body>
+</html>
