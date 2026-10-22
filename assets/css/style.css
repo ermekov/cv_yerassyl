@@ -694,3 +694,56 @@ html[data-theme="light"] .bgfx .b3{background:radial-gradient(circle,rgba(238,12
 .wfacts div:last-child{border-bottom:1px solid var(--line)}
 .wfacts dt{color:var(--muted)}
 .wfacts dd{margin:0;font-weight:600;text-align:right}
+
+
+/* =====================================================================
+   Design pass: one radius scale, honest status, clearer hierarchy
+   ===================================================================== */
+:root{--r:20px;--r-sm:12px}
+
+/* hero: name reads as a name, CV is a real button */
+.eyebrow b{font-family:var(--font);font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+.cta .btn.gh{padding:13px 24px}
+.cta .btn.gh .ic{font-size:17px}
+
+/* diagram header: status of the selected project */
+.vdot{animation:none}
+.vdot.wip{background:var(--orange)}
+.vh em{color:var(--muted)}
+
+/* one radius for all cards */
+.p.big,.p.sm,.vcard,.form.card,.pm-panel{border-radius:var(--r)}
+.cm .pm-panel{border-radius:var(--r)}
+
+/* "Looking for": soft accent glow instead of a coloured top border */
+.want2{border-top:1px solid var(--line);border-radius:var(--r);background:radial-gradient(120% 70% at 0% 0%,rgba(248,156,52,.13),transparent 60%),var(--ink-2)}
+
+/* architecture blocks in the project dialog: numbered steps, no side stripe */
+.pm-arch{counter-reset:arch}
+.pm-arch div{border-left:0;border-radius:14px;counter-increment:arch}
+.pm-arch b::before{content:counter(arch,decimal-leading-zero);margin-right:10px;font-family:var(--mono);font-size:12px;font-weight:500;color:var(--otext)}
+
+/* facts strip: small label above each fact */
+.facts .fl{display:block;margin-bottom:6px;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--otext)}
+.as .chat .ch span{color:#8fb3c9}
+
+
+/* =====================================================================
+   Calm pass: motion only where it carries meaning
+   ===================================================================== */
+/* the card stays still so its labels are easy to read */
+.ready .vcard{animation:none}
+/* data flow is shown by the moving packets; lines stay still */
+.viz .fl{animation:none;opacity:.55}
+.viz .core rect{animation:none;filter:drop-shadow(0 8px 22px rgba(248,156,52,.35))}
+.vtabs.auto .vtab[aria-selected="true"]::after{animation-duration:8s}
+.vcard.paused *{animation-play-state:paused!important}
+
+/* spotlight: one element moved with transform (no full-screen repaint) */
+.bgfx::after{content:none}
+.bgfx .spot{left:0;top:0;width:840px;height:840px;margin:-420px 0 0 -420px;background:radial-gradient(circle,rgba(248,156,52,.06),transparent 65%)}
+html[data-theme="light"] .bgfx .spot{background:radial-gradient(circle,rgba(248,156,52,.09),transparent 65%)}
+@media(max-width:820px){.bgfx .spot{display:none}}
+
+/* timeline links into the project case studies */
+.tl-more{margin-top:10px;font-size:14px}

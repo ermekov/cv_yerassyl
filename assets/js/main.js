@@ -38,7 +38,7 @@
 
   /* ------------------------------------------- hero: project diagram switcher */
   var vizSetup = (function () {
-    var host = $('#viz'), tabsEl = $('#vtabs'), capEl = $('#vcap'), moreBtn = $('#vmore'), fileEl = $('.vh span'), card = $('.vcard');
+    var host = $('#viz'), tabsEl = $('#vtabs'), capEl = $('#vcap'), moreBtn = $('#vmore'), fileEl = $('.vh span'), stEl = $('.vh em'), card = $('.vcard');
     if (!host || !tabsEl) return function () {};
     var NAMES = { dealer: { ru: 'Дилер', kk: 'Дилер', en: 'Dealer' }, mgr: { ru: 'Менеджер', kk: 'Менеджер', en: 'Manager' } };
     var VZ = [
@@ -57,7 +57,7 @@
         C: { t: 'Python API', s: 'workflow' },
         R: [{ t: 'PostgreSQL', s: { ru: 'данные', kk: 'деректер', en: 'data' } }, { t: 'Google Sheets', s: 'live sync' }, { t: { ru: 'Внешние API', kk: 'Сыртқы API', en: 'External APIs' }, s: { ru: 'интеграции', kk: 'интеграциялар', en: 'integrations' } }] }
     ];
-    var cur = 0, auto = !reduce, timer = null, first = true;
+    var cur = 0, auto = !reduce, timer = null, first = true, heroVisible = true, STEP = 8000;
     function L(v) { return (v && typeof v === 'object') ? (v[lang] || v.en || v.ru) : v; }
     var mq = window.matchMedia ? matchMedia('(max-width: 520px)') : { matches: false };
     function ys(n) { return n === 1 ? [200] : n === 2 ? [133, 267] : [66, 200, 334]; }
@@ -98,7 +98,10 @@
     function paint() {
       var p = VZ[cur];
       host.innerHTML = build(p);
-      fileEl.textContent = p.file + ' · live';
+      if (!heroVisible) { var sv0 = $('svg', host); if (sv0 && sv0.pauseAnimations) sv0.pauseAnimations(); }
+      fileEl.textContent = p.file;
+      var PRJ = window.PROJECTS && window.PROJECTS[p.slug], done = !!(PRJ && PRJ.done);   // real status, not a fake 'online'
+      if (stEl) stEl.innerHTML = '<b class="vdot' + (done ? '' : ' wip') + '"></b>' + esc(t(done ? 'st_done' : 'st_wip'));
       capEl.textContent = t(p.cap);
       moreBtn.textContent = t('more') + ' \u2192';
       tabsEl.classList.toggle('auto', auto);
@@ -107,8 +110,8 @@
     }
     function schedule() {
       clearTimeout(timer);
-      if (!auto || document.hidden) return;
-      timer = setTimeout(function () { cur = (cur + 1) % VZ.length; paint(); schedule(); }, 6000);
+      if (!auto || document.hidden || !heroVisible) return;
+      timer = setTimeout(function () { cur = (cur + 1) % VZ.length; paint(); schedule(); }, STEP);
     }
     tabsEl.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('.vtab'); if (!b) return;
@@ -120,20 +123,28 @@
       card.addEventListener('mouseleave', function () { if (auto) { tabsEl.classList.add('auto'); paint(); schedule(); } });
     }
     document.addEventListener('visibilitychange', schedule);
+    if (card && 'IntersectionObserver' in window) new IntersectionObserver(function (es) {   // no work while scrolled away
+      heroVisible = es[0].isIntersecting;
+      var sv = $('svg', host);
+      if (sv && sv.pauseAnimations) { if (heroVisible) sv.unpauseAnimations(); else sv.pauseAnimations(); }
+      card.classList.toggle('paused', !heroVisible);
+      if (heroVisible) schedule(); else clearTimeout(timer);
+    }).observe(card);
     if (mq.addEventListener) mq.addEventListener('change', function () { paint(); });
     return function (restart) { paint(); if (restart) schedule(); };
   })();
 
-  /* ------------------------------------------- ambient background: cursor spotlight (eased follow) */
+  /* ------------------------------------------- ambient background: cursor spotlight (eased, transform only) */
   (function () {
-    var bg = $('.bgfx');
-    if (!bg || reduce || !window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
+    var spot = $('.bgfx .spot');
+    if (!spot || reduce || !window.matchMedia || !matchMedia('(pointer: fine)').matches) return;
     var tx = innerWidth * 0.72, ty = innerHeight * 0.28, cx = tx, cy = ty, run = false, EASE = 0.045;
+    function put() { spot.style.transform = 'translate3d(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px,0)'; }
     function step() {
-      cx += (tx - cx) * EASE; cy += (ty - cy) * EASE;
-      bg.style.setProperty('--mx', cx.toFixed(1) + 'px'); bg.style.setProperty('--my', cy.toFixed(1) + 'px');
+      cx += (tx - cx) * EASE; cy += (ty - cy) * EASE; put();
       if (Math.abs(tx - cx) > 0.4 || Math.abs(ty - cy) > 0.4) requestAnimationFrame(step); else run = false;
     }
+    put();
     window.addEventListener('pointermove', function (e) {
       tx = e.clientX; ty = e.clientY;
       if (!run) { run = true; requestAnimationFrame(step); }
