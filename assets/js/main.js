@@ -436,7 +436,7 @@
     $$('[data-i18n-aria]').forEach(function (e) { e.setAttribute('aria-label', t(e.getAttribute('data-i18n-aria'))); });
     $$('.lang button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-l') === l); });
     var cv = (cfg.CV && (cfg.CV[l] || cfg.CV.ru)) || '';
-    $$('[data-cv]').forEach(function (a) { if (cv) a.setAttribute('href', cv); });
+    $$('[data-cv]').forEach(function (a) { if (cv) { a.setAttribute('href', cv); a.setAttribute('download', cv.split('?')[0].split('/').pop()); } });
     renderCerts(); copyLabel(); vizSetup(false);
     if (curSlug && pm.open) { var y = pmBody.scrollTop; renderProject(curSlug); pmBody.scrollTop = y; }
     if (curCert !== null && cm.open) renderCert(curCert);
