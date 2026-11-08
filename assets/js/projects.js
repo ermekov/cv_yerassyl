@@ -20,7 +20,7 @@ window.PROJECTS = {
       ["API-слой", "Flask отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
       ["Пайплайн рекомендаций", "Backend считает балл для каждой позиции: совпадение тегов (активность, погода, уровень) даёт 52%, популярность за 30 дней 18%, ещё есть бонусы за сезон и наличие и штрафы за бюджет и недавнюю аренду. GPT-4o-mini получает только топ-6 и пишет к каждой позиции пояснение, а если API недоступен, остаются пояснения по правилам. Поэтому запрос к модели короткий и дешёвый."],
       ["AI-ассистент", "Чат-виджет берёт из каталога и базы названия, цены и остатки и отвечает по этим данным."],
-      ["Внешние сервисы", "Погода через OpenWeatherMap, SMS-шлюз для OTP-кодов и платёжный сервис (демо Kaspi QR) подключены через отдельный слой сервисов, поэтому бизнес-логика отделена от маршрутов."],
+      ["Внешние сервисы", "Погода через OpenWeatherMap, отправка OTP-кодов на email (SMTP) и платёжный сервис (демо Kaspi QR) подключены через отдельный слой сервисов, поэтому бизнес-логика отделена от маршрутов."],
       ["Деплой", "Backend запускается через Gunicorn, PostgreSQL — основной источник данных для каталога, бронирований и пользователей."]
     ],
     features: [
@@ -40,7 +40,7 @@ window.PROJECTS = {
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
-      ["Инфраструктура и сервисы", "Gunicorn / OpenWeatherMap / SMS API"]
+      ["Инфраструктура и сервисы", "Gunicorn / OpenWeatherMap / SMTP"]
     ],
     challenge: "Сложнее всего было сделать рекомендации полезными и при этом объяснимыми. Я ограничил, что модель видит и что решает, чтобы ответ приходил быстро, прямо во время бронирования.",
     learned: "AI-функцию удобнее проектировать как один ограниченный шаг в пайплайне. Качество «умной» функции почти целиком зависит от того, как подготовлены данные до запроса к модели."
@@ -55,7 +55,7 @@ window.PROJECTS = {
       ["API қабаты", "Flask каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
       ["Ұсыным пайплайны", "Backend әр позицияға балл есептейді: тегтердің сәйкестігі (белсенділік, ауа райы, деңгей) 52%, соңғы 30 күндегі сұраныс 18%, сонымен қатар маусым мен қалдыққа бонус, бюджет пен жақында алынған тауарға айыппұл бар. GPT-4o-mini тек үздік 6 позицияны алып, әрқайсысына түсініктеме жазады; API қолжетімсіз болса, ережеге негізделген түсініктеме қалады. Сондықтан модельге сұраныс қысқа әрі арзан."],
       ["AI-ассистент", "Чат-виджет каталог пен дерекқордан атауларды, бағаларды және қалдықтарды алып, сол деректер бойынша жауап береді."],
-      ["Сыртқы сервистер", "OpenWeatherMap арқылы ауа райы, OTP-кодтар үшін SMS-шлюз және төлем сервисі (демо Kaspi QR) бөлек сервис қабаты арқылы қосылған, сондықтан бизнес-логика маршруттардан бөлек."],
+      ["Сыртқы сервистер", "OpenWeatherMap арқылы ауа райы, OTP-кодтарды email-ге жіберу (SMTP) және төлем сервисі (демо Kaspi QR) бөлек сервис қабаты арқылы қосылған, сондықтан бизнес-логика маршруттардан бөлек."],
       ["Деплой", "Backend Gunicorn арқылы жұмыс істейді, PostgreSQL каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
     ],
     features: [
@@ -75,7 +75,7 @@ window.PROJECTS = {
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
-      ["Инфрақұрылым және сервистер", "Gunicorn / OpenWeatherMap / SMS API"]
+      ["Инфрақұрылым және сервистер", "Gunicorn / OpenWeatherMap / SMTP"]
     ],
     challenge: "Ең қиыны ұсынымдарды пайдалы әрі түсінікті ету болды. Жауап брондау кезінде жылдам келуі үшін модель нені көретінін және нені шешетінін шектедім.",
     learned: "AI-функцияны пайплайндағы бір шектеулі қадам ретінде жобалаған ыңғайлы екенін түсіндім. «Ақылды» функцияның сапасы модельге сұраныс жібермес бұрын деректердің қалай дайындалғанына тәуелді."
@@ -90,7 +90,7 @@ window.PROJECTS = {
       ["API layer", "Flask serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
       ["Recommendation pipeline", "The backend scores every item: tag overlap (activity, weather, level) gives 52%, 30-day popularity 18%, with bonuses for season and stock and penalties for budget and recent rentals. GPT-4o-mini gets only the top six and writes a tip for each; if the API is down, rule-based tips remain. That keeps the model request short and cheap."],
       ["AI assistant", "The chat widget takes product names, prices and stock from the catalog and the database and answers from that data."],
-      ["External services", "Weather via OpenWeatherMap, an SMS gateway for OTP codes and a payment service (Kaspi QR demo) are connected through a separate service layer, so business logic stays apart from the routes."],
+      ["External services", "Weather via OpenWeatherMap, email delivery of OTP codes over SMTP and a payment service (Kaspi QR demo) are connected through a separate service layer, so business logic stays apart from the routes."],
       ["Deployment", "The backend runs on Gunicorn, with PostgreSQL as the primary source of truth for the catalog, bookings and users."]
     ],
     features: [
@@ -110,7 +110,7 @@ window.PROJECTS = {
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
       ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
-      ["Infrastructure and services", "Gunicorn / OpenWeatherMap / SMS API"]
+      ["Infrastructure and services", "Gunicorn / OpenWeatherMap / SMTP"]
     ],
     challenge: "The hardest part was keeping the recommendations useful and explainable. I limited what the model sees and decides, so the answer arrives quickly, right inside the booking flow.",
     learned: "An AI feature is easier to design as one bounded step in a pipeline. How good a \"smart\" feature is depends mostly on how the data is prepared before the model is called."
