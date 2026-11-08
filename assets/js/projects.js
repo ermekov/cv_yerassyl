@@ -15,10 +15,10 @@ window.PROJECTS = {
     lead: "AI-платформа аренды горного снаряжения — дипломный проект, реализованный от начала до конца.",
     meta: [["Роль", "Один разработчик — backend, frontend, архитектура"], ["Формат", "Дипломный проект"], ["Сервисы", "API · Web"]],
     problem: "Аренда горного снаряжения обычно сводится к переписке напрямую с прокатом — без структурированного способа сравнить оборудование, проверить наличие или получить подсказку под конкретный маршрут. Единой платформы с каталогом, бронированием и хоть каким-то интеллектуальным подбором не существовало.",
-    solution: "Backend на Flask, frontend на Next.js, каталог, бронирование и рекомендации разделены на отдельные сервисы. Сначала рекомендации фильтруются по тегам активности, погоде, уровню и наличию на складе, потом запрос к OpenAI ранжирует только эту небольшую выборку. Рядом с каталогом работает AI-чат, который знает сайт и остатки товаров. Отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Вход по OTP и JWT. Менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж в CSV для Excel.",
+    solution: "Backend на Flask, frontend на Next.js, каталог, бронирование и рекомендации разделены на отдельные сервисы. Рекомендации считает сам backend: каждая позиция получает балл по тегам активности, погоде, уровню, популярности и наличию, а GPT-4o-mini пишет к лучшим шести короткое пояснение. Рядом с каталогом работает AI-чат, который знает сайт и остатки товаров. Отдельная страница рекомендаций на GPT-4o-mini подбирает комплект по уровню, направлению и погоде. Вход по OTP и JWT. Менеджер подтверждает заказы, администратор управляет товарами и заказами и выгружает аналитику продаж в CSV для Excel.",
     arch: [
       ["API-слой", "Flask отдаёт версионированные эндпоинты для каталога, бронирований, отзывов и рекомендаций, которые потребляет отдельный Next.js frontend через типизированный Axios-клиент."],
-      ["Пайплайн рекомендаций", "Предфильтрация по тегам (активность, погода, уровень) и наличию на складе сужает список кандидатов, затем запрос к GPT-4o-mini ранжирует и объясняет получившийся шортлист — это удерживает стоимость и задержку под контролем."],
+      ["Пайплайн рекомендаций", "Backend считает балл для каждой позиции: совпадение тегов (активность, погода, уровень) даёт 52%, популярность за 30 дней 18%, ещё есть бонусы за сезон и наличие и штрафы за бюджет и недавнюю аренду. GPT-4o-mini получает только топ-6 и пишет к каждой позиции пояснение, а если API недоступен, остаются пояснения по правилам. Поэтому запрос к модели короткий и дешёвый."],
       ["AI-ассистент", "Чат-виджет берёт из каталога и базы названия, цены и остатки и отвечает по этим данным."],
       ["Внешние сервисы", "Погода через OpenWeatherMap, SMS-шлюз для OTP-кодов и платёжный сервис (демо Kaspi QR) подключены через отдельный слой сервисов, поэтому бизнес-логика отделена от маршрутов."],
       ["Деплой", "Backend запускается через Gunicorn, PostgreSQL — основной источник данных для каталога, бронирований и пользователей."]
@@ -39,7 +39,7 @@ window.PROJECTS = {
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
       ["Инфраструктура и сервисы", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "Сложнее всего было сделать рекомендации полезными и при этом объяснимыми. Я ограничил, что модель видит и что решает, чтобы ответ приходил быстро, прямо во время бронирования.",
@@ -50,10 +50,10 @@ window.PROJECTS = {
     lead: "Тау жабдықтарын жалға беретін AI-платформа: басынан аяғына дейін жасалған дипломдық жоба.",
     meta: [["Рөлі", "Жалғыз әзірлеуші: backend, frontend, архитектура"], ["Форматы", "Дипломдық жоба"], ["Сервистер", "API · Web"]],
     problem: "Тау жабдықтарын жалға алу әдетте жалға беру пунктімен тікелей жазысуға саяды: жабдықты салыстырудың, бар-жоғын тексерудің немесе нақты маршрутқа лайық жабдықты таңдаудың құрылымдалған жолы жоқ. Каталогы, брондауы және кем дегенде қандай да бір ақылды таңдауы бар бірыңғай платформа болмаған.",
-    solution: "Backend Flask-те, frontend Next.js-те жазылған, каталог, брондау және ұсынымдар бөлек сервистерге бөлінген. Ұсынымдар алдымен белсенділік тегтері, ауа райы, деңгей және қоймадағы бар-жоғы бойынша сүзіледі, содан кейін OpenAI сұранысы тек осы шағын тізімді саралайды. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат жұмыс істейді. GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Кіру OTP және JWT арқылы. Менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын Excel-ге арналған CSV-ге жүктейді.",
+    solution: "Backend Flask-те, frontend Next.js-те жазылған, каталог, брондау және ұсынымдар бөлек сервистерге бөлінген. Ұсынымдарды backend өзі есептейді: әр позиция белсенділік тегтері, ауа райы, деңгей, сұраныс және қоймадағы бар-жоғы бойынша балл алады, ал GPT-4o-mini үздік алтауына қысқа түсініктеме жазады. Каталогтың жанында сайт пен тауар қалдығын білетін AI-чат жұмыс істейді. GPT-4o-mini негізіндегі бөлек ұсыным беті деңгей, бағыт және ауа райы бойынша жиынтық таңдайды. Кіру OTP және JWT арқылы. Менеджер тапсырыстарды растайды, админ тауарлар мен тапсырыстарды басқарып, сатылым аналитикасын Excel-ге арналған CSV-ге жүктейді.",
     arch: [
       ["API қабаты", "Flask каталог, брондау, пікірлер және ұсынымдар үшін нұсқаланған эндпоинттерді ұсынады. Оларды бөлек Next.js frontend типтелген Axios-клиент арқылы пайдаланады."],
-      ["Ұсыным пайплайны", "Тегтер (белсенділік, ауа райы, деңгей) және қоймадағы бар-жоғы бойынша алдын ала сүзгі үміткерлерді қысқартады, содан кейін GPT-4o-mini сұранысы шыққан шағын тізімді саралап, түсіндіреді. Бұл шығын мен кідірісті бақылауда ұстайды."],
+      ["Ұсыным пайплайны", "Backend әр позицияға балл есептейді: тегтердің сәйкестігі (белсенділік, ауа райы, деңгей) 52%, соңғы 30 күндегі сұраныс 18%, сонымен қатар маусым мен қалдыққа бонус, бюджет пен жақында алынған тауарға айыппұл бар. GPT-4o-mini тек үздік 6 позицияны алып, әрқайсысына түсініктеме жазады; API қолжетімсіз болса, ережеге негізделген түсініктеме қалады. Сондықтан модельге сұраныс қысқа әрі арзан."],
       ["AI-ассистент", "Чат-виджет каталог пен дерекқордан атауларды, бағаларды және қалдықтарды алып, сол деректер бойынша жауап береді."],
       ["Сыртқы сервистер", "OpenWeatherMap арқылы ауа райы, OTP-кодтар үшін SMS-шлюз және төлем сервисі (демо Kaspi QR) бөлек сервис қабаты арқылы қосылған, сондықтан бизнес-логика маршруттардан бөлек."],
       ["Деплой", "Backend Gunicorn арқылы жұмыс істейді, PostgreSQL каталог, брондау және пайдаланушылар үшін негізгі дерек көзі."]
@@ -74,7 +74,7 @@ window.PROJECTS = {
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
       ["Инфрақұрылым және сервистер", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "Ең қиыны ұсынымдарды пайдалы әрі түсінікті ету болды. Жауап брондау кезінде жылдам келуі үшін модель нені көретінін және нені шешетінін шектедім.",
@@ -85,10 +85,10 @@ window.PROJECTS = {
     lead: "An AI platform for renting mountain equipment: a graduation project built end to end.",
     meta: [["Role", "Solo developer: backend, frontend, architecture"], ["Format", "Graduation project"], ["Services", "API · Web"]],
     problem: "Renting mountain gear usually comes down to messaging a rental shop directly, with no structured way to compare equipment, check availability or get a suggestion for a specific route. There was no single platform with a catalog, booking and at least some intelligent selection.",
-    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendations split into separate services. Recommendations are first filtered by activity tags, weather, level and stock, and then an OpenAI request ranks only that short list. Next to the catalog there is an AI chat that knows the site and the stock. A separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Sign-in uses OTP and JWT. The manager confirms orders, and the admin manages products and orders and exports sales analytics as CSV for Excel.",
+    solution: "A Flask backend and a Next.js frontend, with the catalog, booking and recommendations split into separate services. The backend ranks recommendations itself: each item gets a score from activity tags, weather, level, popularity and stock, and GPT-4o-mini writes a short tip for the top six. Next to the catalog there is an AI chat that knows the site and the stock. A separate GPT-4o-mini recommendation page builds a kit by level, direction and weather. Sign-in uses OTP and JWT. The manager confirms orders, and the admin manages products and orders and exports sales analytics as CSV for Excel.",
     arch: [
       ["API layer", "Flask serves versioned endpoints for the catalog, bookings, reviews and recommendations, consumed by a separate Next.js frontend through a typed Axios client."],
-      ["Recommendation pipeline", "Tag-based prefiltering (activity, weather, level) and stock availability narrows the candidates, then a GPT-4o-mini request ranks and explains the resulting shortlist, which keeps cost and latency under control."],
+      ["Recommendation pipeline", "The backend scores every item: tag overlap (activity, weather, level) gives 52%, 30-day popularity 18%, with bonuses for season and stock and penalties for budget and recent rentals. GPT-4o-mini gets only the top six and writes a tip for each; if the API is down, rule-based tips remain. That keeps the model request short and cheap."],
       ["AI assistant", "The chat widget takes product names, prices and stock from the catalog and the database and answers from that data."],
       ["External services", "Weather via OpenWeatherMap, an SMS gateway for OTP codes and a payment service (Kaspi QR demo) are connected through a separate service layer, so business logic stays apart from the routes."],
       ["Deployment", "The backend runs on Gunicorn, with PostgreSQL as the primary source of truth for the catalog, bookings and users."]
@@ -109,7 +109,7 @@ window.PROJECTS = {
     stack: [
       ["Backend", "Python / Flask / SQLAlchemy / PostgreSQL / JWT"],
       ["Frontend", "Next.js / React / TypeScript / Tailwind CSS / Zustand / React Query / Axios"],
-      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based filtering / Hybrid recommendation logic"],
+      ["AI", "OpenAI API (GPT-4o-mini) / AI chat assistant / Rule-based scoring / Hybrid recommendation logic"],
       ["Infrastructure and services", "Gunicorn / OpenWeatherMap / SMS API"]
     ],
     challenge: "The hardest part was keeping the recommendations useful and explainable. I limited what the model sees and decides, so the answer arrives quickly, right inside the booking flow.",

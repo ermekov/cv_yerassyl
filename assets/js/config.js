@@ -5,9 +5,9 @@ window.SITE_CONFIG = {
 
   // Резюме PDF (тілге қарай). en: ағылшынша нұсқа (cv-source/cv-en.html-ден жасалады).
   CV: {
-    ru: "assets/cv/Yermekov_Yerassyl_CV.pdf?v=20261022",
-    kk: "assets/cv/Yermekov_Yerassyl_CV.pdf?v=20261022",
-    en: "assets/cv/Yermekov_Yerassyl_CV_EN.pdf?v=20261108"
+    ru: "assets/cv/Yermekov_Yerassyl_CV.pdf?v=20261109",
+    kk: "assets/cv/Yermekov_Yerassyl_CV.pdf?v=20261109",
+    en: "assets/cv/Yermekov_Yerassyl_CV_EN.pdf?v=20261109"
   },
 
   // Жоба суреттері (скриншот, мұқаба) осы папкада: assets/projects/<жоба>/cover.png, 1.png ...
